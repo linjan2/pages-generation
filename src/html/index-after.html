@@ -1,0 +1,75 @@
+<article id="rss-app" class="content" v-scope @vue:mounted="mounted()">
+  <h2>RSS feeds</h2>
+  <ul class="feeds">
+    <li v-for="(feed, i) in feeds" :key="i">
+      <div class="feed">
+        <div class="flex flex-row">
+          <figure class="rss-image" style="flex: 0 0 64px; margin-right: 1rem;"></figure>
+          <div class="feed-name" style="flex: 1 1 0">
+            <label v-bind:for="'checkbox-feed-'+i"
+              class="visibility-toggle"
+              v-on:click="expandFeed(feed)"
+              title="expand/collapse"
+              aria-hidden="true"
+              ><p>{{ feed.name }}</p></label>
+          </div>
+          <figure class="download-image" v-bind:class="feed.status" style="flex: 0 0 24px;"></figure>
+        </div>
+        <input v-bind:id="'checkbox-feed-'+i" type="checkbox" class="visibility-toggle" aria-hidden="true" tabindex=-1>
+        <div v-if="feed.items && feed.items.length>0">
+          <ul>
+            <li v-for="(item, j) in feed.items" :key="j">
+              <div class="feed-item card">
+                <div class="flex flex-row">
+                  <div class="feed-title">
+                    <label v-bind:for="'checkbox-feed-'+i+'-'+j"
+                      aria-hidden="true"
+                      title="expand/collapse"
+                      class="visibility-toggle"
+                      ><p>{{ item.title }}</p></label>
+                  </div>
+                  <p class="feed-date">{{ item.date }}</p>
+                  <a v-if="item.link.length>0" v-bind:href="item.link" v-bind:title="item.link" target="_blank" style="flex: 0 0 16px; align-self: center"
+                    ><svg
+                      class="link-image" style="flex: 0 0 16px; margin-left: 1rem;"
+                      xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 400 400">
+                      <circle cx="250" cy="150" r="120" fill="none" stroke="currentColor" stroke-width="40"/>
+                      <circle cx="150" cy="250" r="120" fill="none" stroke="currentColor" stroke-width="40"/>
+                    </svg></a>
+                </div>
+                <input v-bind:id="'checkbox-feed-'+i+'-'+j" type="checkbox" class="visibility-toggle" aria-hidden="true" tabindex=-1>
+                <div>
+                  <!-- <p v-if="item.description.length>0" v-html="item.description"></p> -->
+                  <p v-if="item.description.length>0">{{ item.description }}</p>
+                  <p v-else style="font-style: italic">no content</p>
+                  <figure style="width: 32px;">
+                    <label v-bind:for="'checkbox-feed-'+i+'-'+j"
+                      aria-hidden="true"
+                      title="collapse"
+                      class="visibility-toggle"
+                      ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+                        <path fill="currentColor" stroke="currentColor" stroke-width="40" stroke-linejoin="round" stroke-linecap="round" d="M64 384 L 256 128 L 448 384 Z"/>
+                      </svg></label>
+                  </figure>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <figure style="width: 32px;">
+            <label v-bind:for="'checkbox-feed-'+i"
+              style="margin: 1rem 2rem 0 2rem;"
+              aria-hidden="true"
+              title="collapse"
+              class="visibility-toggle"
+              ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+                <path fill="currentColor" stroke="currentColor" stroke-width="40" stroke-linejoin="round" stroke-linecap="round" d="M64 384 L 256 128 L 448 384 Z"/>
+              </svg></label>
+          </figure>
+        </div>
+      </div>
+    </li>
+  </ul>
+</article>
+
+<script src="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.iife.js"></script>
+<script src="index/index.js"></script>

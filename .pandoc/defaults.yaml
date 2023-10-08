@@ -1,0 +1,54 @@
+
+verbosity: INFO
+fail-if-warnings: true
+
+# from: markdown+emoji
+to: html5
+template: .pandoc/templates/template.html5
+standalone: true
+self-contained: false
+metadata:
+  # title: Test
+  # title-meta: test
+  # author:
+  # - Firstname Lastname
+  # keywords: [programming]
+  lang: en
+  # description: This is a description
+
+resource-path:
+  - .
+  - .pandoc
+  #- ${.} # directory of this defaults file
+  - src
+css:
+  - styles.css
+variables:
+  toc-title: Table of contents
+  document-css: false
+
+include-before-body: []
+include-after-body: []
+include-in-header: []
+
+section-divs: true
+
+# table-of-contents: true
+toc-depth: 3
+number-sections: false
+strip-comments: true
+
+# reference-location: section
+
+# highlight-style: custom.theme
+# highlight-style: kate
+tab-stop: 2
+preserve-tabs: false
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
+
+syntax-definitions:
+  - .pandoc/dosbat.xml
+  - .pandoc/nginx.xml
+

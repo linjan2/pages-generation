@@ -1,0 +1,75 @@
+<header id="header">
+
+<div id="icon-block" class="flex flex-row">
+
+<div id="maximize-label-div" class="icon left">
+  <label id="maximize-label" for="maximize" aria-hidden="true" title="maximize/minimize">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+      <path transform="rotate(45,256,256)" d="m0.33138,255.41876l115.05089,-114.93845l0,57.46924l83.09231,0l0,-83.0111l-57.52546,0l115.05089,-114.93845l115.05087,114.93845l-57.52543,0l0,83.0111l83.09234,0l0,-57.46924l115.05084,114.93845l-115.05084,114.93843l0,-57.46921l-83.09234,0l0,83.01114l57.52543,0l-115.05087,114.9384l-115.05089,-114.9384l57.52546,0l0,-83.01114l-83.09231,0l0,57.46921l-115.05089,-114.93843z" stroke="none" fill="currentColor"/>
+    </svg>
+  </label>
+</div>
+
+<div id="themebox-label-div" class="icon left">
+  <label id="themebox-label" for="themebox" aria-hidden="true" title="Toggle dark/light mode">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 200 200">
+      <path d="M100 0 A 50,50 0 0,1 100,200 z" fill="currentColor" stroke="none"/>
+      <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="24"/>
+    </svg>
+  </label>
+</div>
+
+<div class="icon github">
+<a href="https://github.com/linjan2" title="github.com/linjan2">
+  <svg width='32' height='32' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 98 96'>
+  <!-- Credit to GitHub, Inc. Downloaded from https://github.com/logos -->
+  <path fill-rule='evenodd' clip-rule='evenodd' d='M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z' fill='currentColor'/>
+  </svg>
+</a>
+</div>
+
+<div class="icon mastodon">
+<a href="https://mastodon.nu/@jansson2" title="mastodon.nu/@jansson2">
+  <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='currentColor' viewBox='0 0 16 16'>
+    <!-- Designed and built by the Bootstrap team with the help of their contributors. Code licensed MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE), docs CC BY 3.0. (https://creativecommons.org/licenses/by/3.0/) -->
+    <path d='M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z'/>
+    </svg>
+</a>
+</div>
+
+<div class="flex flex-row right">
+  <div class="icon">
+    <a href="https://github.com/sponsors/linjan2?o=esb" title="Sponsor @linjan2">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 342 315">
+      <g transform="rotate(225,150,121)">
+        <path d="M0,0 h200 a100,100 90 0,1 0,200 z" fill="#ff5e95"/>
+        <path d="M200,200 a100,100 90 0,1 -200,0 v-200 z" fill="#ff3980"/>
+      </g>
+    </svg>
+    </a>
+  </div>
+  $if(homelink)$
+  <div class="icon"><a href="index.html" title="Link to home page">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 26 26">
+      <path fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"
+        d="M22,14 v10 h-6 v-6 h-6 v6 h-6 v-10 h-3 l12,-12 l12,12 h-3 z m-1,-6 v-5 h-3 v2 l3 3 z"/>
+    </svg>
+  </a></div>
+  $endif$
+  </div>
+</div>
+
+<div id="title-block">
+  <h1 class="title">$if(h1)$$h1$$else$$title$$endif$</h1>
+  $if(subtitle)$
+  <div class="subtitle">$subtitle$</div>
+  $endif$
+  $for(author)$
+  <div class="author">$author$</div>
+  $endfor$
+  $if(date)$
+  <p class="date">$date$</p>
+  $endif$
+</div>
+
+</header>

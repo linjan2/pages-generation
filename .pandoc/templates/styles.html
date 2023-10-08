@@ -1,0 +1,34 @@
+
+$if(quotes)$
+q { quotes: "“" "”" "‘" "’"; }
+$endif$
+
+$if(displaymath-css)$
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+$endif$
+
+$if(csl-css)$
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+$if(csl-entry-spacing)$
+  margin-bottom: $csl-entry-spacing$;
+$endif$
+}
+.hanging div.csl-entry {
+  margin-left:2rem;
+  text-indent:-2rem;
+}
+div.csl-left-margin {
+  min-width:2rem;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left: 2rem;
+  padding-left: 1rem;
+}
+div.csl-indent {
+  margin-left: 2rem;
+}
+$endif$
+
