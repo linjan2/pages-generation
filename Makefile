@@ -26,19 +26,11 @@ $(OUTPUT_DIR)/%.css: src/css/%.css
 	$(MINIFY) "$<" > "$@"
 
 
-
-$(OUTPUT_DIR)/%/index.js: src/apps/%/
-	@mkdir -p $(dir $@)
-	$(ROLLUP) $(wildcard $(dir $<)*) > "$@"
-
-
-clean:
-	@rm --verbose --recursive --force $(OUTPUT_DIR)/*.{html,js,css}
-	@rm --verbose --recursive --force $(OUTPUT_DIR)/*/*.js
+$(TARGETS): $(wildcard .pandoc/templates/*) .pandoc/custom.theme
 
 
 # ---
 
-$(TARGETS): $(wildcard .pandoc/templates/*)
-$(OUTPUT_DIR)/index.html: $(OUTPUT_DIR)/index/index.js src/html/index-head.html src/html/index-after.html
+clean:
+	@rm --verbose --recursive $(TARGETS)
 

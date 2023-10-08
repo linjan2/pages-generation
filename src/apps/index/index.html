@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+
+
+
+  <meta name="description" content="Notes on programming and systems tools" />
+
+  <title>index</title>
+
+  <style>
+    
+
+
+  </style>
+
+  <link rel="stylesheet" href="styles.css" />
+
+
+
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+
+  <style>
+  li {
+    list-style: none;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    position: relative;
+    padding: 0;
+  }
+
+  /* li::before {
+    position: absolute;
+    font-size: 1rem;
+    left: -1em;
+    content: '›';
+  } */
+  .card {
+    padding: 1rem;
+    /* background-color: var(--dim-color); */
+    width: 100%;
+    border-left: 1px solid var(--fg-color);
+  }
+  .feed-item {
+    padding-bottom: 0;
+    /* border-top: 1px solid var(--fg-color); */
+  }
+
+  .rss-image {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 512 512'%3E%3Crect ry='10%25' rx='10%25' y='0' x='0' height='512' width='512' fill='%23e15a00' stroke='none'/%3E%3Cpath d='M 200 512 A 200 200 0 0 0 0 312' fill='none' stroke='white' stroke-width='100'/%3E%3Cpath d='M 400 512 A 400 400 0 0 0 0 112' fill='none' stroke='white' stroke-width='100'/%3E%3C/svg%3E");
+    background-size: 64px 64px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .link-image {
+    width: 16px;
+    height: 16px;
+    align-self: center;
+  }
+  .download-image {
+    width: 24px;
+    height: 24px;
+    align-self: center;
+    margin: 0 1rem;
+  }
+  .download-image.unloaded {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 512 512'%3E%3Cpath fill='none' stroke='%23999' stroke-width='32' stroke-linejoin='round' stroke-linecap='round' d='M160,256 h-96 v-192 h384 v192 h-96'/%3E%3Cpath fill='none' stroke='%23999' stroke-width='32' stroke-linejoin='round' stroke-linecap='round' d='M256,128 v320 l -128 -128 l 128 128 l 128 -128'/%3E%3C/svg%3E");
+  }
+  .download-image.failed {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='220' fill='none' stroke='%23BF5248' stroke-width='40'/%3E%3Cpath fill='none' stroke='%23BF5248' stroke-width='40' stroke-linejoin='round' stroke-linecap='round' d='M256,132 v 150'/%3E%3Ccircle cx='256' cy='380' r='40' fill='%23BF5248' stroke='none'/%3E%3C/svg%3E");
+  }
+
+  .feed {
+    padding: 1rem 0;
+    width: 100%;
+  }
+  .feed-name {
+    display: flex;
+    align-items: center;
+  }
+  .feed-title {
+    flex: 2 1 0;
+  }
+  .feed-date {
+    color: var(--fg-dim-color);
+    text-align: right;
+    font-size: 0.75rem;
+    flex: 1 1 0;
+  }
+
+  #rss-app svg {
+    color: var(--acc-color);
+  }
+
+  .embedded {
+    width: 60%;
+    margin: 2rem auto;
+    text-align: center;
+  }
+  #mastodon {
+    border-radius: 10px;
+  }
+
+  @media screen and (max-width: 60em) {
+    .embedded {
+      width: 100%;
+    }
+  }
+  </style>
+
+</head>
+
+<body>
+<input type="checkbox" id="themebox" aria-hidden="true" tabindex=-1>
+<input type="checkbox" id="maximize" aria-hidden="true" tabindex=-1>
+<div id="wrapper">
+
+<div class="skipnav"><a href="#maincontent">Skip to main content</a></div>
+
+<header id="header">
+
+<div id="icon-block" class="flex flex-row">
+
+<div id="maximize-label-div" class="icon left">
+  <label id="maximize-label" for="maximize" aria-hidden="true" title="maximize/minimize">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+      <path transform="rotate(45,256,256)" d="m0.33138,255.41876l115.05089,-114.93845l0,57.46924l83.09231,0l0,-83.0111l-57.52546,0l115.05089,-114.93845l115.05087,114.93845l-57.52543,0l0,83.0111l83.09234,0l0,-57.46924l115.05084,114.93845l-115.05084,114.93843l0,-57.46921l-83.09234,0l0,83.01114l57.52543,0l-115.05087,114.9384l-115.05089,-114.9384l57.52546,0l0,-83.01114l-83.09231,0l0,57.46921l-115.05089,-114.93843z" stroke="none" fill="currentColor"/>
+    </svg>
+  </label>
+</div>
+
+<div id="themebox-label-div" class="icon left">
+  <label id="themebox-label" for="themebox" aria-hidden="true" title="Toggle dark/light mode">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 200 200">
+      <path d="M100 0 A 50,50 0 0,1 100,200 z" fill="currentColor" stroke="none"/>
+      <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="24"/>
+    </svg>
+  </label>
+</div>
+
+<div class="icon github">
+<a href="https://github.com/linjan2" title="github.com/linjan2">
+  <svg width='32' height='32' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 98 96'>
+  <!-- Credit to GitHub, Inc. Downloaded from https://github.com/logos -->
+  <path fill-rule='evenodd' clip-rule='evenodd' d='M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z' fill='currentColor'/>
+  </svg>
+</a>
+</div>
+
+<div class="icon mastodon">
+<a href="https://mastodon.nu/@jansson2" title="mastodon.nu/@jansson2">
+  <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='currentColor' viewBox='0 0 16 16'>
+    <!-- Designed and built by the Bootstrap team with the help of their contributors. Code licensed MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE), docs CC BY 3.0. (https://creativecommons.org/licenses/by/3.0/) -->
+    <path d='M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z'/>
+    </svg>
+</a>
+</div>
+
+<div class="flex flex-row right">
+  <div class="icon">
+    <a href="https://github.com/sponsors/linjan2?o=esb" title="Sponsor @linjan2">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 342 315">
+      <g transform="rotate(225,150,121)">
+        <path d="M0,0 h200 a100,100 90 0,1 0,200 z" fill="#ff5e95"/>
+        <path d="M200,200 a100,100 90 0,1 -200,0 v-200 z" fill="#ff3980"/>
+      </g>
+    </svg>
+    </a>
+  </div>
+    </div>
+</div>
+
+<div id="title-block">
+  <h1 class="title">></h1>
+    <div class="subtitle">Notes on programming, systems tools, and applications</div>
+      </div>
+
+</header>
+<div id="content" class="content">
+
+
+
+<div id="maincontent">
+
+<section id="index" class="level2">
+<h2>index</h2>
+<ul>
+<li><div class="card">
+<a href="mac.html">Mac CLI</a>
+</div></li>
+<li><div class="card">
+<a href="network.html">Network configuration and troubleshooting</a>
+</div></li>
+<li><div class="card">
+<a href="nginx.html">Nginx configuration</a>
+</div></li>
+<li><div class="card">
+<a href="openshift.html">OpenShift container platform</a>
+</div></li>
+<li><div class="card">
+<a href="python.html">Python notes</a>
+</div></li>
+<li><div class="card">
+<a href="shell.html">Shell notes</a>
+</div></li>
+<li><div class="card">
+<a href="virtualization.html">Virtualization tools; VMs, containers, LVM</a>
+</div></li>
+</ul>
+</section>
+
+<div>
+
+<article id="rss-app" class="content" v-scope @vue:mounted="mounted()">
+  <h2>RSS feeds</h2>
+  <ul class="feeds">
+    <li v-for="(feed, i) in feeds" :key="i">
+      <div class="feed">
+        <div class="flex flex-row">
+          <figure class="rss-image" style="flex: 0 0 64px; margin-right: 1rem;"></figure>
+          <div class="feed-name" style="flex: 1 1 0">
+            <label v-bind:for="'checkbox-feed-'+i"
+              class="visibility-toggle"
+              v-on:click="expandFeed(feed)"
+              title="expand/collapse"
+              aria-hidden="true"
+              ><p>{{ feed.name }}</p></label>
+          </div>
+          <figure class="download-image" v-bind:class="feed.status" style="flex: 0 0 24px;"></figure>
+        </div>
+        <input v-bind:id="'checkbox-feed-'+i" type="checkbox" class="visibility-toggle" aria-hidden="true" tabindex=-1>
+        <div v-if="feed.items && feed.items.length>0">
+          <ul>
+            <li v-for="(item, j) in feed.items" :key="j">
+              <div class="feed-item card">
+                <div class="flex flex-row">
+                  <div class="feed-title">
+                    <label v-bind:for="'checkbox-feed-'+i+'-'+j"
+                      aria-hidden="true"
+                      title="expand/collapse"
+                      class="visibility-toggle"
+                      ><p>{{ item.title }}</p></label>
+                  </div>
+                  <p class="feed-date">{{ item.date }}</p>
+                  <a v-if="item.link.length>0" v-bind:href="item.link" v-bind:title="item.link" target="_blank" style="flex: 0 0 16px; align-self: center"
+                    ><svg
+                      class="link-image" style="flex: 0 0 16px; margin-left: 1rem;"
+                      xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 400 400">
+                      <circle cx="250" cy="150" r="120" fill="none" stroke="currentColor" stroke-width="40"/>
+                      <circle cx="150" cy="250" r="120" fill="none" stroke="currentColor" stroke-width="40"/>
+                    </svg></a>
+                </div>
+                <input v-bind:id="'checkbox-feed-'+i+'-'+j" type="checkbox" class="visibility-toggle" aria-hidden="true" tabindex=-1>
+                <div>
+                  <!-- <p v-if="item.description.length>0" v-html="item.description"></p> -->
+                  <p v-if="item.description.length>0">{{ item.description }}</p>
+                  <p v-else style="font-style: italic">no content</p>
+                  <figure style="width: 32px;">
+                    <label v-bind:for="'checkbox-feed-'+i+'-'+j"
+                      aria-hidden="true"
+                      title="collapse"
+                      class="visibility-toggle"
+                      ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+                        <path fill="currentColor" stroke="currentColor" stroke-width="40" stroke-linejoin="round" stroke-linecap="round" d="M64 384 L 256 128 L 448 384 Z"/>
+                      </svg></label>
+                  </figure>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <figure style="width: 32px;">
+            <label v-bind:for="'checkbox-feed-'+i"
+              style="margin: 1rem 2rem 0 2rem;"
+              aria-hidden="true"
+              title="collapse"
+              class="visibility-toggle"
+              ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+                <path fill="currentColor" stroke="currentColor" stroke-width="40" stroke-linejoin="round" stroke-linecap="round" d="M64 384 L 256 128 L 448 384 Z"/>
+              </svg></label>
+          </figure>
+        </div>
+      </div>
+    </li>
+  </ul>
+</article>
+
+<script src="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.iife.js"></script>
+<script src="index/index.js"></script>
+
+<div class="disqus content">
+  <div id="disqus_thread"></div>
+</div>
+<script>
+  var disqus_config = function () {
+  this.page.url = "https://linda-jansson.com/index.html";
+  this.page.identifier = "index";
+  this.page.title = "index";
+  };
+
+  (function() {
+  var d = document, s = d.createElement('script');
+  s.src = 'https://linda-jansson-com.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+
+</div>
+
+</body>
+</html>

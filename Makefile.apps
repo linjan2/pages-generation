@@ -1,0 +1,29 @@
+OUTPUT_DIR ?= pages
+TARGETS += $(OUTPUT_DIR)/index.html $(OUTPUT_DIR)/index/index.js
+
+MINIFY := minify/run.sh
+ROLLUP := rollup/run.sh
+
+PANDOC_OPTIONS := '/^<!--/ , /-->$$/ {sub("<!--","",$$1); sub("-->","",$$NF); print}'
+
+defaults: $(TARGETS)
+
+$(OUTPUT_DIR)/index.html: src/apps/index/index.html $(OUTPUT_DIR)/index/index.js src/apps/index/index-head.html src/apps/index/index-after.html
+	$(MINIFY) "$<" > "$@"
+
+src/apps/index/index.html: src/apps/index/index.md
+	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<")
+
+$(OUTPUT_DIR)/index/index.js: src/apps/index/index.js
+	$(ROLLUP) $(wildcard $(dir $<)*) > "$@"
+
+
+$(TARGETS): $(wildcard .pandoc/templates/*) .pandoc/custom.theme
+
+#$(OUTPUT_DIR)/%/index.js: src/apps/%/
+#@mkdir -p $(dir $@)
+#$(ROLLUP) $(wildcard $(dir $<)*) > "$@"
+
+clean:
+	@rm --verbose --recursive $(TARGETS)
+

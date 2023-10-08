@@ -1,0 +1,38 @@
+<article id="word-app" class="content" v-scope @vue:mounted="reload()">
+  <h2>Guess the word</h2>
+  <figure>
+    <figcaption>After a new word is generated, input a guessed word below. Correctly placed letters are shown in green. Letters occuring in the word but that are not placed correctly are shown in purple.</figcaption>
+
+    <select v-model="type" @input="select">
+      <option value="words">English</option>
+      <option value="ord">Swedish</option>
+    </select>
+    <button @click="reload()">New game</button>
+
+    <div class="words flex flex-column" :class="{solved: solved}">
+      <div v-for="(r, i) in letters" :key="i" class="flex flex-row letters-row">
+        <span v-for="(c, j) in r" :key="j" class="letter" :class="c.c"><code>{{c.l}}</code></span>
+      </div>
+      <div class="flex flex-row letters-row" v-if="!solved">
+        <span v-for="n in word.length" :key="n" :class="{unfilled: !input[n-1]}" class="letter"><code>{{input[n-1] || '.'}}</code></span>
+      </div>
+      <div id="guess-input" class="flex flex-row content">
+        <div><input :maxlength="word.length" :disabled="solved||word===''" placeholder="enter a word" type="text" v-model="input" @keyup.enter="add(input)" /></div>
+        <div><button @click="add(input)" :disabled="solved || word==='' || input.length!==word.length">Guess</button></div>
+      </div>
+    </div>
+
+    <div v-if="solved && definition!==null">
+      <blockquote :cite="definition.wordnikUrl">
+        <p>
+          <a :href="definition.wordnikUrl"><dfn>{{definition.word}}</dfn></a>
+          <br>{{definition.text}}
+          <br>—<a :href="definition.attributionUrl"><cite>{{definition.attributionText}}</cite></a>
+        </p>
+      </blockquote>
+    </div>
+  </figure>
+</article>
+
+<script src="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.iife.js"></script>
+<script src="guesstheword.min.js"></script>

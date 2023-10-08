@@ -1,0 +1,76 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="shadowGradient"
+      r="0.8" cx="0.75" cy="0.75" fx="0.25" fy="0.25">
+      <stop offset="0%" stop-color="#FFF"/>
+      <stop offset="100%" stop-color="#000"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<main id="main">
+<article id="app" v-scope>
+  <div id="input" class="flex">
+   <div><h2>Select items for the wheel</h2></div>
+    <div><ul>
+      <li v-for="(item, i) in items" :key="i">
+        <input type="text" v-model="item.text" @blur="if (item.text==='') remove(i)" @keyup.enter="if (item.text==='') remove(i)"/>
+      </li>
+      <li>
+        <input id="add" placeholder="add an item..." type="text" v-model="input" @blur="if (input!=='') add(input)" @keyup.enter="if (input!=='') add(input)" />
+      </li>
+    </ul></div>
+  </div>
+  <button :disabled="playing || items.length==0" @click="playButton()">Spin!</button>
+
+  <div id="figure">
+    <figure>
+      <figcaption>Pressing the button spins the wheel.</figcaption>
+      <svg id="spinwheel" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="-1000 -1000 2000 2000">
+        <circle cx="0" cy="0" r="1000.0" :fill="background" stroke="none"/>
+
+        <g :class="{ playing: playing }" @animationend="animationend()">
+          <g :transform="`matrix(${Zs.x},${Zs.y},${-Zs.y},${Zs.x},0,0)`">
+            <g v-for="(item, i) in items" :key="i"
+              stroke="none"
+              :transform="`matrix(${item.x},${item.y},${-item.y},${item.x},0,0)`">
+              <path
+                :d="`M0,0 h1000 A1000,1000 0 0,1 ${1000*R[1].x},${1000*-R[1].y} z`"
+                :fill="item.c" />
+              <text
+                x="800" y="0"
+                :transform="`matrix(${zhalf.x},${-zhalf.y},${zhalf.y},${zhalf.x},0,0)`"
+                font-family="sans-serif" font-weight="800" :font-size="fontsize(item.text)"
+                dominant-baseline="central"
+                alignment-baseline="middle"
+                text-anchor="end"
+                fill="#FFF"
+                stroke="#000" stroke-width="10" paint-order="stroke"
+                >{{item.text}}</text>
+            </g>
+          </g>
+        </g>
+        
+        <circle cx="0" cy="0" r="880.0" fill="url(#shadowGradient)" stroke="url(#shadowGradient)" opacity="0.3" stroke-width="80"/>
+
+        <path d="M960,-80 l -100,80 l 100,80 q 50 -80 0 -160 z" fill="#999" stroke="#3e3c38" stroke-width="15" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="960" y1="0" x2="1000" y2="0" stroke="#3e3c38" stroke-width="50" stroke-linecap="round"/>
+
+        <circle cx="0" cy="0" r="50" fill="#999" stroke="#3e3c38" stroke-width="20"/>
+      </svg>
+    </figure>
+  </div>
+
+  <button :disabled="playing || items.length==0" @click="playButton()">Spin!</button>
+  <div id="output" class="flex">
+    <h2>Results</h2>
+    <ul>
+      <li v-if="items2.length===0">...</li>
+      <li v-for="(item, i) in items2" :key="i">{{items2.length - i}}. {{item}}</li>
+    </ul>
+  </div>
+</article>
+</main>
+
+<script src="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.iife.js"></script>
+<script src="spinthewheel.min.js"></script>

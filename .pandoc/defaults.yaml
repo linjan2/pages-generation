@@ -40,8 +40,8 @@ strip-comments: true
 
 # reference-location: section
 
-# highlight-style: custom.theme
-# highlight-style: kate
+highlight-style: .pandoc/custom.theme
+#highlight-style: haddock
 tab-stop: 2
 preserve-tabs: false
 html-math-method:

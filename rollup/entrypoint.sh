@@ -21,8 +21,8 @@ fi
 shopt -s dotglob
 cp --no-clobber "${WORKDIR}"/* ./
 
-npm run fix -- input.js >&2
-npm run build -- --input input.js --file output.min.js >&2
+npm run fix -- index.js >&2
+npm run build -- --input index.js --file output.min.js >&2
 
 exec cat output.min.js
 

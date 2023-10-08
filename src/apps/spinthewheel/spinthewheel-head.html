@@ -1,0 +1,61 @@
+<style>
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(2160deg);
+    }
+  }
+  .playing {
+    animation: 5s cubic-bezier(.4,.5,.5,1) 0s 1 normal none running spin;
+  }
+
+  #app {
+    min-height: 80vh;
+  }
+
+  button {
+    padding: 1rem;
+    font-size: 2rem;
+    display: block;
+    margin: 1rem auto;
+  }
+
+  input {
+    text-align: center;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #999;
+    width: 100%;
+    font-size: 1.5rem;
+    color: var(--fg-color);
+    line-height: 3rem;
+    padding: 0.5rem 0.5rem;
+  }
+  #input {
+    padding: 2rem;
+    min-height: 20rem;
+    align-items: center;
+  }
+  #output {
+    height: 40rem;
+    font-size: 1.5rem;
+  }
+  #output>* {
+    align-self: center;
+  }
+  li {
+    list-style:none;
+  }
+  ul,ol {
+    padding-left: 0;
+  }
+
+  #app h2 {
+    font-size: 3rem;
+    text-align: center;
+    margin: 3rem 0;
+  }
+
+</style>

@@ -38,7 +38,7 @@ const terserOptions = {
 }
 
 export default {
-  input: "input.js",
+  input: "index.js",
   output: {
     file: "output.min.js",
     format: "iife",
