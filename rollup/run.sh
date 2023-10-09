@@ -11,7 +11,7 @@ then
   # copy first file as index.js
   cp "${1}" "${TEMP}/index.js"
 else
-  cp --verbose --no-clobber "${@}" "${TEMP}/" >&2
+  cp --no-clobber "${@}" "${TEMP}/" >&2
 fi
 
 chmod --recursive g+rwX "${TEMP}"

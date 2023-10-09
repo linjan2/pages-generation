@@ -41,7 +41,7 @@ body {
   --fg-dim-color-dark: #777;
   --bg-dim-color-dark: #1a1a1a;
   --dim-color-dark: #292929;
-  --link-color-dark: #ffe294;
+  --link-color-dark: #fd771d;
 
   --fg-color-light: #333;
   --bg-color-light: #fafafa;
@@ -50,8 +50,8 @@ body {
   --fg-dim-color-light: #888;
   --bg-dim-color-light: #eee;
   --dim-color-light: #eee;
-  --link-color-light: #846f3b;;
-  
+  --link-color-light: #b54800;
+
   --bg-color: var(--bg-color-light);
   --fg-color: var(--fg-color-light);
   --acc-color: var(--acc-color-light);
@@ -352,6 +352,9 @@ label.visibility-toggle:hover {
 }
 
 div.sourceCode {
+  border: 1px solid var(--fg-color);
+}
+pre.sourceCode {
   filter: invert(var(--invert));
 }
 

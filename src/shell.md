@@ -1,4 +1,4 @@
-<!--
+<!----
 --table-of-contents --number-sections
 --variable homelink=true --variable includeHeader=true
 --metadata=title:"Shell"
@@ -300,11 +300,6 @@ Run commands in parallel with `xargs`:
 find . -name Makefile -printf '%h\0' \
   | xargs --null --max-arg=1 --max-procs=4 \
     make --jobs=4 --directory
-
-# find task files and execute their default targets in parallel
-find . -name Taskfile.yml -printf '%h\0' \
-  | xargs --null --max-arg=1 --max-procs=4 \
-    go-task --concurrency 4 --dir
 ```
 
 Run commands in parallel with GNU `parallel`:

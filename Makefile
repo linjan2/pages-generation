@@ -14,7 +14,7 @@ TARGETS += $(patsubst src/css/%.css,$(OUTPUT_DIR)/%.css,$(wildcard src/css/*.css
 
 default: $(TARGETS)
 
-PANDOC_OPTIONS := '/^<!--/ , /-->$$/ {sub("<!--","",$$1); sub("-->","",$$NF); print}'
+PANDOC_OPTIONS := '/^<!----/ , /-->/ {sub("<!----$$","",$$1); sub("-->","",$$NF); print}'
 
 html/%.html: src/%.md .pandoc/defaults.yaml
 	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<")

@@ -1,29 +1,38 @@
-OUTPUT_DIR ?= pages
-TARGETS += $(OUTPUT_DIR)/index.html $(OUTPUT_DIR)/index/index.js
 
-MINIFY := minify/run.sh
+.PHONY: default clean
+
 ROLLUP := rollup/run.sh
 
-PANDOC_OPTIONS := '/^<!--/ , /-->$$/ {sub("<!--","",$$1); sub("-->","",$$NF); print}'
+OUTPUT_DIR ?= pages
 
-defaults: $(TARGETS)
-
-$(OUTPUT_DIR)/index.html: src/apps/index/index.html $(OUTPUT_DIR)/index/index.js src/apps/index/index-head.html src/apps/index/index-after.html
-	$(MINIFY) "$<" > "$@"
-
-src/apps/index/index.html: src/apps/index/index.md
-	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<")
-
-$(OUTPUT_DIR)/index/index.js: src/apps/index/index.js
-	$(ROLLUP) $(wildcard $(dir $<)*) > "$@"
+TARGETS := $(patsubst src/apps/%/index.js,$(OUTPUT_DIR)/%/index.js,$(wildcard src/apps/*/index.js))
+TARGETS += $(patsubst src/apps/%/index.html,$(OUTPUT_DIR)/%.html,$(wildcard src/apps/*/index.html))
 
 
-$(TARGETS): $(wildcard .pandoc/templates/*) .pandoc/custom.theme
+default: $(TARGETS)
 
-#$(OUTPUT_DIR)/%/index.js: src/apps/%/
-#@mkdir -p $(dir $@)
-#$(ROLLUP) $(wildcard $(dir $<)*) > "$@"
+
+PANDOC_OPTIONS := '/^<!----/ , /-->/ {sub("<!----$$","",$$1); sub("-->","",$$NF); print}'
+
+$(OUTPUT_DIR)/%.html: src/apps/%/index.md
+	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<") \
+		--include-in-header "$(dir $<)head.html" \
+		--include-after-body "$(dir $<)after.html" \
+		--include-before-body "$(dir $<)$(basename $(notdir $<)).html"
+
+
+$(OUTPUT_DIR)/%/index.js: src/apps/%/index.js
+	@mkdir -p "$(dir $@)"
+	$(ROLLUP) $(wildcard "$(dir $<)"*) > "$@"
+
+
+SOURCES := $(wildcard src/*.md)
+SOURCES += $(shell find src/apps/* -maxdepth 1 -type d  -printf '%f ')
+
+src/apps/index/index.md:
+	@echo $(SOURCES)
+
 
 clean:
-	@rm --verbose --recursive $(TARGETS)
+	rm --verbose $(TARGETS)
 

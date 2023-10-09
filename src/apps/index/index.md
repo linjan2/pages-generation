@@ -1,11 +1,9 @@
-<!--
+<!----
 --metadata=title:"index"
 --metadata=title-meta:"index"
 --metadata=subtitle:'Notes on programming, systems tools, and applications'
 --metadata=description:'Notes on programming and systems tools'
 --variable includeHeader=true --variable h1='>'
---include-in-header src/apps/index/index-head.html
---include-after-body src/apps/index/index-after.html
 -->
 
 ## index

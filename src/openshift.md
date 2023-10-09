@@ -1,4 +1,4 @@
-<!--
+<!----
 --table-of-contents --number-sections
 --variable homelink=true --variable includeHeader=true
 --metadata=title:"OpenShift"
