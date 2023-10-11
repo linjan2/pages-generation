@@ -15,4 +15,7 @@
 - <div class="card">[Python notes](python.html)</div>
 - <div class="card">[Shell notes](shell.html)</div>
 - <div class="card">[Virtualization tools; VMs, containers, LVM](virtualization.html)</div>
+- <div class="card">[Spin the wheel](spinthewheel.html)</div>
+- <div class="card">[Guess the word](guesstheword.html)</div>
+
 

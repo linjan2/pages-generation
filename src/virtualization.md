@@ -56,7 +56,7 @@ sudo systemctl enable --now libvirtd
 ```
 
 ```sh
-# optionally enable nested virtualization by addning kvm kernel module arguments.
+# optionally enable nested virtualization by adding kvm kernel module arguments.
 # edit `options kvm_amd nested=1` or `options kvm_intel nested=1`
 sudo vi /etc/modprobe.d/kvm.conf
 
@@ -372,9 +372,9 @@ To pass a GPU device to a virtual machine a VFIO stub driver must be loaded. The
 
 Change the kernel parameters to ensure the VFIO driver is preloaded for the GPU (and its associated audio device). Another GPU should be active as the primary GPU on the host machine.
 
-> NOTE: in addition to enabling virtualization in BIOS, there may another switch to enable PCI passthrough/IOMMU (input/output memory management unit). E.g. `VT-d` (Intel Virtualization Technology for directed I/O) or `AMD-Vi` (AMD I/O Virtualization Technology (IOMMU)).
+> NOTE: in addition to enabling virtualization in BIOS, there may be another switch to enable PCI passthrough/IOMMU (input/output memory management unit). E.g. `VT-d` (Intel Virtualization Technology for directed I/O) or `AMD-Vi` (AMD I/O Virtualization Technology (IOMMU)).
 
-Check that the GPUs onboard devices are in an isolated IOMMU group. All devices in a group must be passed to the VM. The motherboard's "secondary" GPU slot may not be isolated. The GPU to passthrough must then be inserted in the "primary" PCIe x16 slot.
+Check that the GPUs onboard devices are in an isolated IOMMU group. All devices in a group must be passed to the VM. The motherboard's "secondary" GPU slot may not be isolated. In that case, the GPU to passthrough must be inserted in the "primary" PCIe x16 slot.
 
 ```sh
 # show /sys/kernel/iommu_groups/<group>/devices/<domain>:<bus>:<slot>:<function>

@@ -41,7 +41,7 @@ body {
   --fg-dim-color-dark: #777;
   --bg-dim-color-dark: #1a1a1a;
   --dim-color-dark: #292929;
-  --link-color-dark: #fd771d;
+  --link-color-dark: #ffa264;
 
   --fg-color-light: #333;
   --bg-color-light: #fafafa;
@@ -50,7 +50,7 @@ body {
   --fg-dim-color-light: #888;
   --bg-dim-color-light: #eee;
   --dim-color-light: #eee;
-  --link-color-light: #b54800;
+  --link-color-light: #823c0e;
 
   --bg-color: var(--bg-color-light);
   --fg-color: var(--fg-color-light);

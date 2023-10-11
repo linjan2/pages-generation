@@ -1231,10 +1231,6 @@ Day-of-month and day-of-week only only intersected if using `*/x`, otherwise a u
 
 ```sh
 sudo dnf install moreutils
-
-
-# run editor in pipeline
-
 ```
 
 ## File management
@@ -1353,9 +1349,9 @@ ctrl+r +    " paste from system clipboard
 
 ```default
 shift+v  " enter visual mode to select a block.
->  " to indent
-<  " to de-indent
-.  " to repeat
+>        " to indent
+<        " to de-indent
+.        " to repeat
 ```
 
 #### Re-order lines
@@ -1400,10 +1396,10 @@ Escape  " to exit visual mode
 ```default
 /search term\c  " search case-insensitive
 /search term\C  " search case-sensitive
-cgn  " replace to end of search term highlight
-n    " next match
-.    " repeat the replace action
-:noh " un-highlight search terms
+cgn             " replace to end of search term highlight
+n               " next match
+.               " repeat the replace action
+:noh            " un-highlight search terms
 ```
 
 ```default
@@ -1903,7 +1899,7 @@ sudo rpm --rebuilddb
 ```
 
 ```sh
-yum --disablerepo=* --enablerepo='rhel-7-server-rpms'
+yum --disablerepo='*' --enablerepo='rhel-7-server-rpms'
 yum update
 yum install -y httpd
 yum remove httpd

@@ -1615,7 +1615,7 @@ sam.widgets.com    IN   TXT   "favorite drink=orange juice"
 | 403 | Forbidden | The client does not have access rights to the content |
 | 404 | Not Found | The server can not find the requested resource |
 | 405 | Method Not Allowed | The request method is known by the server but is not supported by the target resource |
-| 406 | Not Acceptable | The reponse doens't conforms to the creteria given by the client |
+| 406 | Not Acceptable | The reponse doesn't conforms to the creteria given by the client |
 | 407 | Proxy Authentication Required | This is similar to 401 Unauthorized but authentication is needed to be done by a proxy. |
 | 408 | Request Timeout | This response is sent on an idle connection by some servers, even without any previous request by the client. |
 | 409 | Conflict | This response is sent when a request conflicts with the current state of the server. |

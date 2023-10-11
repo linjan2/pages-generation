@@ -996,6 +996,8 @@ oc get pods --selector '!openshift.io/build.name' \
 # show capability relevant state
 oc exec POD -- capsh --print
 oc exec POD -- ps -o seccomp
+oc exec POD -- cat /proc/$$/status | grep -i seccomp
+  # Seccomp: 0=SECCOMP_MODE_DISABLED, 1=SECCOMP_MODE_STRICT, 2=SECCOMP_MODE_FILTER
 
 # Linux capabilities documentation
 man 7 capabilities
@@ -6734,10 +6736,3 @@ oc patch bc/example --type=json --patch '
       allowEnv: true'
 ```
 
-## Sealed secrets
-
-```sh
-
-```
-
-## External secrets
