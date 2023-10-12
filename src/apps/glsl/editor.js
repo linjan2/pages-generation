@@ -144,54 +144,6 @@ const highlightStyle = HighlightStyle.define([
     color: invalid},
 ]);
 
-function app(state, vertexShader, fragmentShader) {
-  return initializeGraphics(state, vertexShader, fragmentShader).then(graphics => {
-
-    graphics.pushCommands([
-      { type: graphics.UPLOAD_VBO, data: graphics.vertices },
-      { type: graphics.UPLOAD_IBO, data: graphics.indices },
-      { type: graphics.UPLOAD_TEXTURE, data: graphics.textureImage },
-      { // set type [x,y]
-        type: graphics.SET_ATTRIBUTE,
-        location: graphics.positionLocation,
-        vertexSize: 2,
-        dataType: graphics.gl.FLOAT,
-        normalize: false,
-        stride: 0, // 0 means use natural packed stride
-        byteOffset: graphics.positions.byteOffset
-      },
-      { // set type [s,t]
-        type: graphics.SET_ATTRIBUTE,
-        location: graphics.texelLocation,
-        vertexSize: 2,
-        dataType: graphics.gl.FLOAT,
-        normalize: false,
-        stride: 0, // 0 means use natural packed stride
-        byteOffset: graphics.texels.byteOffset
-      },
-      { // 
-        type: graphics.SET_UNIFORMS,
-        mouse: new Float32Array([0.0, 0.0]),
-        time: new Float32Array([0.0]),
-        color: new Float32Array([0.9, 0.9, 0.9, 1.0]),
-        rotate: new Float32Array([0.0]) // [Math.tan(Math.PI/8)]
-      }
-    ]);
-
-    graphics.setPostCommands([
-      {
-        type: graphics.DRAW_ELEMENTS,
-        mode: graphics.gl.TRIANGLE_STRIP,
-        indexCount: graphics.indicesBackground.length,
-        byteOffset: graphics.indicesBackground.byteOffset
-      }
-    ]);
-
-    graphics.setStarted();
-    graphics.setStopped();
-    return graphics;
-  });
-}
 
 function Editor(props) {
   return {
@@ -267,7 +219,7 @@ document.querySelectorAll(".editor").forEach(el => {
   el.replaceWith(container);
 });
 
-export default {
+export {
   Editor,
   editors
 };

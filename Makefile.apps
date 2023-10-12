@@ -6,7 +6,8 @@ ROLLUP := rollup/run.sh
 OUTPUT_DIR ?= pages
 
 TARGETS := $(patsubst src/apps/%/index.js,$(OUTPUT_DIR)/%/index.js,$(wildcard src/apps/*/index.js))
-TARGETS += $(patsubst src/apps/%/index.html,$(OUTPUT_DIR)/%.html,$(wildcard src/apps/*/index.html))
+TARGETS += $(patsubst src/apps/%/index.md,$(OUTPUT_DIR)/%.html,$(wildcard src/apps/*/index.md))
+TARGETS += $(patsubst src/apps/%,$(OUTPUT_DIR)/%,$(wildcard src/apps/**/*.jpg))
 
 
 default: $(TARGETS)
@@ -18,20 +19,22 @@ $(OUTPUT_DIR)/%.html: src/apps/%/index.md
 	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<") \
 		--include-in-header "$(dir $<)head.html" \
 		--include-after-body "$(dir $<)after.html" \
-		--include-before-body "$(dir $<)$(basename $(notdir $<)).html"
+		--include-before-body "$(dir $<)before.html"
 
 
 $(OUTPUT_DIR)/%/index.js: src/apps/%/index.js
 	@mkdir -p "$(dir $@)"
-	$(ROLLUP) $(wildcard "$(dir $<)"*) > "$@"
+	$(ROLLUP) "$(dir $<)"* > "$@"
 
+$(OUTPUT_DIR)/glsl/index.js: $(wildcard src/apps/glsl/*.js)
+# SOURCES := $(wildcard src/*.md)
+# SOURCES += $(shell find src/apps/* -maxdepth 1 -type d  -printf '%f ')
+#
+# src/apps/index/index.md:
+# echo $(SOURCES)
 
-SOURCES := $(wildcard src/*.md)
-SOURCES += $(shell find src/apps/* -maxdepth 1 -type d  -printf '%f ')
-
-src/apps/index/index.md:
-	@echo $(SOURCES)
-
+$(OUTPUT_DIR)/%.jpg: src/apps/%.jpg
+	@cp --verbose "$<" "$@"
 
 clean:
 	rm --verbose $(TARGETS)

@@ -5,8 +5,6 @@
 --metadata=title-meta="glsl"
 --metadata=subtitle:"Testing GLSL in WebGL"
 --metadata=description:'GLSL'
---include-in-header editor/head.html
---include-after-body editor/after.html
 --->
 
 # GLSL

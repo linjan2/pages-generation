@@ -3,7 +3,8 @@ var initializeGraphics;
 ({
   initializeGraphics: initializeGraphics
 } = (function (){
-  "use strict;"
+  "use strict";
+
 
 function loadImages() {
   // run everything else when image is loaded
@@ -14,7 +15,7 @@ function loadImages() {
   return Promise.all([
     new Promise(resolve => {
       const textureImage = new Image();
-      textureImage.src = "image.jpg";
+      textureImage.src = "glsl/image.jpg";
       textureImage.addEventListener("load", () => resolve(textureImage));
     })
   ]);
@@ -123,7 +124,7 @@ function createContext() {
     throw new Error("browser may not support webgl");
   }
   const container = document.getElementById("canvas-container");
-  
+
   // const aspectRatio = gl.drawingBufferHeight / gl.drawingBufferWidth;
   // const aspectRatio2 = canvasElement.clientHeight / canvasElement.clientWidth;
   // console.log(aspectRatio, aspectRatio2);
@@ -650,124 +651,13 @@ function initializeGraphics(state, vertexShaderSource, fragmentShaderSource) {
   });
 }
 
-
-
-
-// document.getElementById("button").addEventListener("click", (e) => {
-  // if (G) {
-  //   // G.pushCommands([
-  //   //   {
-  //   //     type: G.SET_UNIFORMS,
-  //   //     mouse: new Float32Array([0.0, 0.0]),
-  //   //     time: new Float32Array([0.0]),
-  //   //     color: new Float32Array([0.9, 0.9, 0.9, 1.0]),
-  //   //     rotate: new Float32Array([0.0]) // [Math.tan(Math.PI/8)]
-  //   //   },
-  //   //   {
-  //   //     type: G.DRAW_ELEMENTS,
-  //   //     mode: G.gl.TRIANGLE_STRIP,
-  //   //     indexCount: G.indicesBackground.length,
-  //   //     byteOffset: G.indicesBackground.byteOffset
-  //   //   }
-  //   // ]);
-  //   // G.render(66);
-
-  //   G.toggleStopped();
-  // }
-// });
 return {
   initializeGraphics
 };
 })());
 
 
-
-
-
-
-let editors = [];
-document.querySelectorAll(".editor").forEach(el => {
-  const container = document.createElement("div");
-  // container.setAttribute("class", "editor flex flex-row flex-collapse");
-  container.setAttribute("class", "editor");
-  // container.setAttribute("v-scope", "Editor({doc, lang})");
-  container.setAttribute("v-scope", `Editor(editors[${editors.length}])`);
-  container.setAttribute("v-on:vue:mounted", "mounted");
-  // container.setAttribute("ref", "app");
-  editors.push({
-    doc: el.textContent.trim(),
-    lang: el.dataset.lang
-  });
-  el.replaceWith(container);
-});
-
-
-let content = document.getElementById("content");
-content.setAttribute("v-scope", "");
-content.setAttribute("v-on:vue:mounted", "mounted");
-
-let state = PetiteVue.reactive({
-  fps: 0,
-  stopped: true
-});
-
-PetiteVue.createApp({
-  Editor,
-  editors,
-  graphics: null,
-  state,
-  mounted() {
-    console.log("app mounted");
-    app(
-      this.state,
-      this.editors[0].view.state.doc.toString(),
-      this.editors[1].view.state.doc.toString()
-    ).then(graphics => {
-      this.graphics = graphics;
-    });
-  },
-  run() {
-    this.graphics.pushCommands([
-      {
-        type: this.graphics.SET_SHADER,
-        vertexShader: this.editors[0].view.state.doc.toString(),
-        fragmentShader: this.editors[1].view.state.doc.toString()
-      },
-      // { type: this.graphics.UPLOAD_VBO, data: this.graphics.vertices },
-      // { type: this.graphics.UPLOAD_IBO, data: this.graphics.indices },
-      // { type: this.graphics.UPLOAD_TEXTURE, data: this.graphics.textureImage },
-      // { // set type [x,y]
-      //   type: this.graphics.SET_ATTRIBUTE,
-      //   location: this.graphics.positionLocation,
-      //   vertexSize: 2,
-      //   dataType: this.graphics.gl.FLOAT,
-      //   normalize: false,
-      //   stride: 0, // 0 means use natural packed stride
-      //   byteOffset: this.graphics.positions.byteOffset
-      // },
-      // { // set type [s,t]
-      //   type: this.graphics.SET_ATTRIBUTE,
-      //   location: this.graphics.texelLocation,
-      //   vertexSize: 2,
-      //   dataType: this.graphics.gl.FLOAT,
-      //   normalize: false,
-      //   stride: 0, // 0 means use natural packed stride
-      //   byteOffset: this.graphics.texels.byteOffset
-      // },
-      { // 
-        type: this.graphics.SET_UNIFORMS,
-        mouse: new Float32Array([0.0, 0.0]),
-        time: new Float32Array([0.0]),
-        color: new Float32Array([0.9, 0.9, 0.9, 1.0]),
-        rotate: new Float32Array([0.0]) // [Math.tan(Math.PI/8)]
-      }
-    ]);
-  },
-  toggle() {
-    this.graphics.toggleStopped();
-  }
-}).mount(content);
-// }).mount("#content");
-
-export default initializeGraphics;
+export {
+  initializeGraphics
+};
 
