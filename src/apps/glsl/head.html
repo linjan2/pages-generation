@@ -1,0 +1,118 @@
+<style>
+#wrapper {
+  --chalky-dark: #e5c07b;
+  --coral-dark: #e06c75;
+  --cyan-dark: #56b6c2;
+  --invalid-dark: #ffffff;
+  --ivory-dark: #abb2bf;
+  --stone-dark: #7d8799;
+  --malibu-dark: #61afef;
+  --sage-dark: #98c379;
+  --whiskey-dark: #d19a66;
+  --violet-dark: #a262b6;
+
+  --chalky-light: #c4a46b;
+  --coral-light: #bb5a62;
+  --cyan-light: #397c85;
+  --invalid-light: #000000;
+  --ivory-light: #51545a;
+  --stone-light: #3d434b;
+  --malibu-light: #4883b3;
+  --sage-light: #6e8d58;
+  --whiskey-light: #976f49;
+  --violet-light: #c275da;
+
+  --chalky: var(--chalky-light);
+  --coral: var(--coral-light);
+  --cyan: var(--cyan-light);
+  --invalid: var(--invalid-light);
+  --ivory: var(--ivory-light);
+  --stone: var(--stone-light);
+  --malibu: var(--malibu-light);
+  --sage: var(--sage-light);
+  --whiskey: var(--whiskey-light);
+  --violet: var(--violet-light);
+}
+
+/* flip to dark mode */
+#themebox:checked ~ #wrapper {
+  --chalky: var(--chalky-light);
+  --coral: var(--coral-light);
+  --cyan: var(--cyan-light);
+  --invalid: var(--invalid-light);
+  --ivory: var(--ivory-light);
+  --stone: var(--stone-light);
+  --malibu: var(--malibu-light);
+  --sage: var(--sage-light);
+  --whiskey: var(--whiskey-light);
+  --violet: var(--violet-light);
+}
+@media (prefers-color-scheme: dark) {
+  /* set foreground and background colors to dark mode*/
+  #wrapper { 
+    --chalky: var(--chalky-dark);
+    --coral: var(--coral-dark);
+    --cyan: var(--cyan-dark);
+    --invalid: var(--invalid-dark);
+    --ivory: var(--ivory-dark);
+    --stone: var(--stone-dark);
+    --malibu: var(--malibu-dark);
+    --sage: var(--sage-dark);
+    --whiskey: var(--whiskey-dark);
+    --violet: var(--violet-dark);
+  }
+  /* flip to light mode */
+  #themebox:checked ~ #wrapper {
+    --chalky: var(--chalky-light);
+    --coral: var(--coral-light);
+    --cyan: var(--cyan-light);
+    --invalid: var(--invalid-light);
+    --ivory: var(--ivory-light);
+    --stone: var(--stone-light);
+    --malibu: var(--malibu-light);
+    --sage: var(--sage-light);
+    --whiskey: var(--whiskey-light);
+    --violet: var(--violet-light);
+  }
+}
+
+#canvas-container {
+  position: relative;
+  height: 0;
+  padding-bottom: 62.5%;
+  overflow: hidden;
+  background-color: grey;
+}
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.eval-editor {
+  flex-wrap: wrap;
+}
+.eval-editor>* {
+  flex-grow: 1;
+}
+.editor-output {
+  background-color: var(--bg-dim-color);
+  border: 1px solid var(--fg-dim-color);
+  height: 6rem;
+  overflow: auto;
+  resize: vertical;
+  min-width: 30rem;
+  max-width: 59rem;
+}
+.editor-output-text {
+  padding: 0.5rem;
+}
+.editor-output button {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+  border: 1px solid var(--fg-dim-color);
+  border-radius: 2px;
+  text-align: center;
+  cursor: pointer;
+}
+</style>
