@@ -17,13 +17,34 @@ jobs:
 
     steps:
 
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
+        with:
+          path: source
+          ref: main
+          fetch-depth: 1
 
-      - name: Configure Git
+      - name: Checkout destination
+        uses: actions/checkout@v4
+        with:
+          repository: linjan2/linda-jansson
+          path: destination
+          ref: main
+
+      - name: Install
+        run: sudo apt-get install -y pandoc
+
+      - name: Make
+        run: pushd source && make OUTPUT_DIR="${GITHUB_WORKSPACE}/destination" && popd
+
+      - name: Git push
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          cd destination
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
-          make
+          git checkout -B github-actor
+          git add .
+          git commit -m "${GITHUB_ACTOR}"
+          git push --set-upstream github-actor
 
