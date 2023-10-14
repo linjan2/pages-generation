@@ -374,33 +374,24 @@ ul.task-list{list-style: none;}
 .invisible {
   visibility: hidden;
 }
-
-@keyframes spinner {
-  0% {
-    content: '\\';
-  }
-  25% {
-    content: '|';
-  }
-  50% {
-    content: '/';
-  }
-  75% {
-    content: '-';
-  }
+.hidden {
+  display: none;
 }
 
-.loading {
-  position: relative;
+button {
+  padding: 0.5rem 1.5rem;
+  margin: 1rem;
+  border: 0.25rem solid var(--fg-color);
+  border-radius: 32px;
+  transition: background-color 0.2s;
+  font-weight: bold;
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  white-space: nowrap;
 }
-.loading::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  content: '\\';
-  animation: 1s infinite normal spinner;
+button:hover {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
 }
 
 @media screen and (max-width: 60em) {

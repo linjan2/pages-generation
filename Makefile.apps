@@ -15,7 +15,7 @@ default: $(TARGETS)
 
 PANDOC_OPTIONS := '/^<!----/ , /-->/ {sub("<!----$$","",$$1); sub("-->","",$$NF); print}'
 
-$(OUTPUT_DIR)/%.html: src/apps/%/index.md
+$(OUTPUT_DIR)/%.html: src/apps/%/index.md src/apps/%/head.html src/apps/%/after.html src/apps/%/before.html
 	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<") \
 		--include-in-header "$(dir $<)head.html" \
 		--include-after-body "$(dir $<)after.html" \
@@ -38,4 +38,7 @@ $(OUTPUT_DIR)/%.jpg: src/apps/%.jpg
 
 clean:
 	rm --verbose $(TARGETS)
+
+format: $(wildcard src/apps/**/*.js)
+	$(foreach FILE,$@,clang-format -i $(FILE);)
 

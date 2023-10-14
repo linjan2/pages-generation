@@ -5,6 +5,7 @@
 --metadata=title-meta="shell"
 --metadata=subtitle:"Shell commands and references for Linux and Windows"
 --metadata=description:'Shell commands and references for Linux and Windows'
+--css spinner.css
 -->
 # Shell notes
 

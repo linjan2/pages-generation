@@ -17,5 +17,5 @@
 - <div class="card">[Virtualization tools; VMs, containers, LVM](virtualization.html)</div>
 - <div class="card">[Spin the wheel](spinthewheel.html)</div>
 - <div class="card">[Guess the word](guesstheword.html)</div>
-
+- <div class="card">[OpenGL Shading Language (GLSL)](glsl.html)</div>
 

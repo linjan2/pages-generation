@@ -3,14 +3,16 @@
 --variable homelink=true --variable includeHeader=true
 --metadata=title:"GLSL"
 --metadata=title-meta="glsl"
---metadata=subtitle:"Testing GLSL in WebGL"
+--metadata=subtitle:"OpenGL Shading Language (GLSL)"
 --metadata=description:'GLSL'
---->
+-->
 
 # GLSL
 
+## Tool to test GLSL
+
 ```{=html}
-<div class="debug">
+<div class="debug hidden">
   <div>FPS: {{ state.fps }}</div>
   <div>Stopped: {{ state.stopped }}</div>
 </div>
@@ -24,8 +26,8 @@
 </div>
 <div>
   <div class="flex flex-row">
-    <button @click="run">Run</button>
-    <button @click="toggle">Start/Stop</button>
+    <button @click="toggle">{{ state.stopped ? "Start" : "Stop" }} render</button>
+    <button @click="run">Compile shaders</button>
   </div>
 </div>
 ```
@@ -81,20 +83,12 @@ varying vec2 st;
 // varying vec2 time;
 
 void main() {
-  // vec2 p = gl_FragCoord.xy * u_dimensions;
-  // gl_FragColor = vec4(p, 1.0, 1.0);
+  vec2 p = gl_FragCoord.xy * u_dimensions;
+  gl_FragColor = vec4(p, 1.0, 1.0);
 
   // gl_FragColor = color;
-  gl_FragColor = texture2D(u_sampler, st);
+  // gl_FragColor = texture2D(u_sampler, st);
 }
 </pre>
 ```
-
-## `GL_POINTS`
-
-Show the coordinates in clip space
-
-## Degenerate (no-area) triangles
-
-
 
