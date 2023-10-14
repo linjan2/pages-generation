@@ -1,4 +1,8 @@
 /* eslint no-unused-vars: "off" */
+/**
+ * @file Return callback that sets up WebGL context and command buffer management.
+ */
+
 var initializeGraphics;
 ({initializeGraphics : initializeGraphics} = (function() {
      "use strict";

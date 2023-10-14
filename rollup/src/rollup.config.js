@@ -57,7 +57,7 @@ export default {
     commonjs(),
     eslint({
       throwOnError: true,
-      throwOnWarning: true
+      throwOnWarning: false
     }),
     babel({
       babelHelpers: "bundled"

@@ -1310,13 +1310,18 @@ ctrl+y  " scroll down without moving cursor (though it sticks to bottom)
 
 "+P        " paste from system clipboard (use * instead of + for PRIMARY selection)
 "+yy       " copy line to system clipboard
-:'<,'>"+y  " copy visual selection to system clipboard
+:'<,'>"+y  " copy visual selection to system clipboard (or use "+y in visual mode)
 
 " run external command on visual selection (replaces text with output)
 :'<,'>!awk -f script.awk
 :'<,'>!sort
+:'<,'>!column -t -s ','
 " run external command on entire file (replaces text with output)
 :%!clang-format
+:!stat %   " use current file name in command
+
+:read FILE       " insert contents of FILE at cursor
+:read !COMMAND   " insert output of COMMAND at cursor
 
 :Lexplore             " open netrw in left pane
 :vertical resize -10  " resize window
@@ -1333,9 +1338,6 @@ tx  " go to next character `x` exclusive
 ,   " go backwards to previous character `x`
 
 :g/regex  " search and list results with line numbers (go to line n with :n)
-:'<,'>!column -t -s ','  " run the command columns on selected text
-:!stat %                 " use current file name in command
-
 ctrl+n  " iterate autocompletions in insert mode
 ```
 

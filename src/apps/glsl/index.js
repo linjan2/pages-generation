@@ -1,5 +1,8 @@
-import {Editor, editors} from './editor';
-import {initializeGraphics} from './graphics';
+/**
+ * @file Render GLSL shaders entered in input editors.
+ */
+import {Editor, editors} from "./editor";
+import {initializeGraphics} from "./graphics";
 
 let content = document.getElementById("content");
 content.setAttribute("v-scope", "");
@@ -111,3 +114,4 @@ PetiteVue
         toggle() { this.graphics.toggleStopped(); }
     })
     .mount(content);
+

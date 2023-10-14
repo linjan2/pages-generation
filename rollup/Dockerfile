@@ -12,9 +12,8 @@ COPY --chown=1001:0 entrypoint.sh /usr/bin/entrypoint.sh
 
 RUN \
     chmod ug+x /usr/bin/entrypoint.sh && \
-    npm install --global rollup && \
-    npm install --global eslint && \
-    npm install
+    npm install && \
+    cat package.json
 
 WORKDIR /app/files
 

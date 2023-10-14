@@ -1,3 +1,6 @@
+/**
+ * @file Return Editor Vue app and references to all editor-elements found in the HTML source.
+ */
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete";
 import {
     defaultKeymap,

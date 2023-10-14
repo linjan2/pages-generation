@@ -23,8 +23,11 @@ $(OUTPUT_DIR)/%.html: src/apps/%/index.md src/apps/%/head.html src/apps/%/after.
 
 
 $(OUTPUT_DIR)/%/index.js: src/apps/%/index.js
-	@mkdir -p "$(dir $@)"
-	$(ROLLUP) "$(dir $<)"* > "$@"
+	@-mkdir -p "$(dir $@)"
+	$(ROLLUP) "$(dir $<)"* > "$@" || { rm "$@"; exit 1; }
+
+#src/apps/%/index.js: $(wildcard src/apps/%/*.js)
+#@echo $^
 
 $(OUTPUT_DIR)/glsl/index.js: $(wildcard src/apps/glsl/*.js)
 # SOURCES := $(wildcard src/*.md)
