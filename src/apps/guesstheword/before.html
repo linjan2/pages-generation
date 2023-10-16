@@ -1,5 +1,4 @@
 <article id="word-app" class="content" v-scope @vue:mounted="reload()">
-  <h2>Guess the word</h2>
   <figure>
     <figcaption>After a new word is generated, input a guessed word below. Correctly placed letters are shown in green. Letters occuring in the word but that are not placed correctly are shown in purple.</figcaption>
 
@@ -17,8 +16,8 @@
         <span v-for="n in word.length" :key="n" :class="{unfilled: !input[n-1]}" class="letter"><code>{{input[n-1] || '.'}}</code></span>
       </div>
       <div id="guess-input" class="flex flex-row content">
-        <div><input :maxlength="word.length" :disabled="solved||word===''" placeholder="enter a word" type="text" v-model="input" @keyup.enter="add(input)" /></div>
-        <div><button @click="add(input)" :disabled="solved || word==='' || input.length!==word.length">Guess</button></div>
+        <div class="flex flex-row"><input :maxlength="word.length" :disabled="solved||word===''" placeholder="enter a word" type="text" v-model="input" @keyup.enter="add(input)" /></div>
+        <div class="flex flex-row"><button @click="add(input)" :disabled="solved || word==='' || input.length!==word.length">Guess</button></div>
       </div>
     </div>
 

@@ -4,6 +4,7 @@
 --metadata=subtitle:'Notes on programming, systems tools, and applications'
 --metadata=description:'Notes on programming and systems tools'
 --variable includeHeader=true --variable h1='>'
+--css spinner.css
 -->
 
 ## index

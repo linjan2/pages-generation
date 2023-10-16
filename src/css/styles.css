@@ -129,9 +129,15 @@ body {
 .flex-column {
   flex-direction: column;
 }
+.flex-center {
+  align-items: center;
+}
 .flex>* {
   flex: 0 0 0;
   align-self: stretch;
+}
+.flex-center>* {
+  align-self: center;
 }
 .flex.spread>* {
   flex: 1 1 0;
