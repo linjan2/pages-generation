@@ -377,13 +377,30 @@ Change the kernel parameters to ensure the VFIO driver is preloaded for the GPU 
 Check that the GPUs onboard devices are in an isolated IOMMU group. All devices in a group must be passed to the VM. The motherboard's "secondary" GPU slot may not be isolated. In that case, the GPU to passthrough must be inserted in the "primary" PCIe x16 slot.
 
 ```sh
+sudo su - # become root
+
 # show /sys/kernel/iommu_groups/<group>/devices/<domain>:<bus>:<slot>:<function>
 find /sys/kernel/iommu_groups/ -type l | sort --version-sort
 # show group of a specific device "0000:07:00.0"
 readlink --canonicalize /sys/bus/pci/devices/0000\:07\:00.0/iommu_group/
+
+# show PCI device codes and kernel drivers for each device (search for "VGA")
+lspci -nnk | less
+# show device codes and names for domain 7 (e.g. devices 00:07:0 00:07:1)
+lspci -nn -s 7
+
+sudo virt-host-validate qemu # ensure IOMMU is enabled by kernel
+lsmod | grep vfio # check that vfio modules are loaded
+dmesg | grep -i IOMMU # check for "DMAR: IOMMU enabled"
+# check for errors in dracut services logs
+journalctl --since today --unit 'dracut*' --grep 'fatal|error|fail'
 ```
 
-Create a new initramfs/initrd image that assigns the `pci-stub` drivers to the GPU and also loads `vfio-pci` drivers. Grubby and Dracut is used below.
+#### pci-stub with different GPUs
+
+Ensure the pci-stub driver claims the GPU's devices before the host drivers. This can be used when the two GPUs are different and therefore have different device codes (`VENDOR:DEVICE`).
+
+Create a new initramfs/initrd image that assigns the `pci-stub` driver to the GPU's devices. Grubby and Dracut is used below.
 
 ```sh
 sudo su - # become root
@@ -392,24 +409,48 @@ sudo su - # become root
 modprobe --show-depends pci-stub # shows: builtin pci_stub
 modinfo pci-stub
 
-# show PCI device codes and kernel drivers for each device.
-lspci -nnk # copy all of the ID codes associated with the GPU device; e.g. 10de:1187, 10de:0e0a
-
 # append options to Grub boot loader's kernel arguments in GRUB_CMDLINE_LINUX.
 #   NOTE: use "amd_iommu=on" instead of "intel_iommu" for AMD CPU
 grubby --update-kernel=ALL \
-  --args='intel_iommu=on iommu=pt pci-stub.ids=10de:1187,10de:0e0a rd.driver.pre=vfio-pci'
+  --args='intel_iommu=on iommu=pt pci-stub.ids=10de:1187,10de:0e0a'
 
 # optionally remove "rhgb" and "quiet" to show system messages after booting
 grubby --update-kernel=ALL --remove-args='rhgb quiet'
-
 grubby --info=ALL # show all kernels' settings
+
+# overwrite initramfs/initrd image
+dracut --force --kver $(uname -r) --verbose && echo success
+ls -lrt /boot/initramfs*
+
+# reboot
+shutdown now
+
+# verify command line includes the added options
+cat /proc/cmdline
+# check that kernel driver in use is "pci-stub" for the GPU's devices
+lspci -nnk
+```
+
+#### vfio-pci with different GPUs
+
+Ensure the vfio-pci driver claims the GPU's devices before the host drivers. This can be used when the two GPUs are different and therefore have different device codes (`VENDOR:DEVICE`).
+
+Create a new initramfs/initrd image that assigns the `vfio-pci` driver to the GPU's devices. Grubby and Dracut is used below.
+
+```sh
+sudo su - # become root
+
+grubby --update-kernel=ALL \
+  --args='intel_iommu=on iommu=pt vfio-pci.ids=10de:1187,10de:0e0a rd.driver.pre=vfio-pci'
+
+# or set vfio-pci.ids in module options
+echo 'options vfio-pci ids=10de:1187,10de:0e0a' > /etc/modprobe.d/vfio-pci.conf
 
 # check if vfio depends on vfio_virqfd; if it does, add vfio_virqfd to "add_drivers" below
 modprobe --show-depends vfio
 # create dracut configuration that adds vfio kernel modules to the initramfs
 echo 'add_drivers+=" vfio vfio_iommu_type1 vfio_pci "'   > /etc/dracut.conf.d/vfio.conf
-# or, ensure early kernel module loading by modprobe (use this)
+# or, ensure early kernel module loading by modprobe
 echo 'force_drivers+=" vfio vfio_iommu_type1 vfio_pci "' > /etc/dracut.conf.d/vfio.conf
 
 # overwrite initramfs/initrd image
@@ -419,13 +460,54 @@ ls -lrt /boot/initramfs*
 # reboot
 shutdown now
 
-sudo virt-host-validate qemu # ensure IOMMU is enabled by kernel
-lspci -nnk # check that kernel driver in use is "pci-stub" for the GPUs devices
-lsmod | grep vfio # check that vfio modules are loaded
-dmesg | grep -i IOMMU # check for "DMAR: IOMMU enabled"
-# check for errors in dracut services logs
-journalctl --since today --unit 'dracut*' --grep 'fatal|error|fail'
+# verify command line includes the added options
+cat /proc/cmdline
+# check that kernel driver in use is "vfio-pci" for the GPU's devices
+lspci -nnk
 ```
+
+#### vfio-pci with identical GPUs
+
+Ensure the vfio-pci driver claims the GPU's devices before the host drivers. This can be used when the two GPUs are the same and therefore have the same device codes (`VENDOR:DEVICE`).
+
+Create a new initramfs/initrd image that assigns the `vfio-pci` driver to the GPU's devices. Grubby and Dracut is used below.
+
+```sh
+cat > /sbin/vfio-pci-driver-override.sh <<'EOF'
+#!/bin/sh
+DEVICES='0000:07:00.0 0000:07:00.1'  # GPU's devices to passthrough
+for DEVICE in ${DEVICES}
+do
+  echo 'vfio-pci' > /sys/bus/pci/devices/${DEVICE}/driver_override
+done
+modprobe -i vfio-pci
+EOF
+chmod 0755 /sbin/vfio-pci-driver-override.sh
+
+# configure module to run script
+echo 'install vfio-pci /sbin/vfio-pci-driver-override.sh' > /etc/modprobe.d/vfio-pci.conf
+
+# configure dracut to include the script in the initramfs
+cat > /etc/dracut.conf.d/vfio.conf <<'EOF'
+add_drivers+=" vfio vfio_iommu_type1 vfio_pci "
+install_items+=" /sbin/vfio-pci-driver-override.sh "
+EOF
+  # NOTE: install_items should list full paths to any executables used in the script
+
+# overwrite initramfs/initrd image
+dracut --force --kver $(uname -r) --verbose && echo success
+ls -lrt /boot/initramfs*
+
+# reboot
+shutdown now
+
+# verify command line includes the added options
+cat /proc/cmdline
+# check that kernel driver in use is "vfio-pci" for the GPU's devices
+lspci -nnk
+```
+
+#### Add a GPU in VM
 
 Attach the GPU's devices to the VM and remove all SPICE components to only get video output to the GPU's monitor. You may need to add the `<address>` elements to GPU devices to ensure they are both added on the same slot with different functions. Set `multifunction="on"` on the graphics device in that case.
 
