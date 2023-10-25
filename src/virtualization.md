@@ -19,7 +19,7 @@ Client tools:
 - `virt-install`: commandline utility for provisioning virtual machines.
 - `virt-viewer`: opens graphical console of a virtual machine.
 
-Check for virtualization support. AMD-V/Intel VT CPU virtualization should be turned on inside BIOS settings.
+Check for virtualization support. AMD-V/Intel VT CPU virtualization should be enabled within BIOS settings.
 
 ```sh
 # check for virtualization support in CPU cores
@@ -28,7 +28,7 @@ lscpu | grep Virtualization # check CPU capability (AMD-V or VT-x)
 ls -l /dev/kvm # check if KVM device is present
 ```
 
-Libvirt stores its application data at `/var/lib/libvirt/` and `${XDG_CONFIG_HOME}/libvirt/` (or `~/.config/libvirt/`). Before installing libvirt, an LVM logical volume can be created and mounted there.
+Libvirt stores its application data in `/var/lib/libvirt/` and `${XDG_CONFIG_HOME}/libvirt/` (or `~/.config/libvirt/`). Before installing libvirt, an LVM logical volume can be created and mounted there.
 
 ```sh
 sudo su -
@@ -63,8 +63,8 @@ sudo vi /etc/modprobe.d/kvm.conf
 # add user to virtualization group for management access to qemu
 sudo usermod --append --groups libvirt $(id --name --user)
 # create user-local configuration for default connection
-mkdir -p ${XDG_CONFIG_HOME:-~/.config}/libvirt
-echo 'uri_default = "qemu:///system"' >> ${XDG_CONFIG_HOME:-~/.config}/libvirt/libvirt.conf
+mkdir -p "${XDG_CONFIG_HOME:-${HOME}/.config}/libvirt"
+echo 'uri_default = "qemu:///system"' >> "${XDG_CONFIG_HOME:-${HOME}/.config}/libvirt/libvirt.conf"
   # change to "qemu:///session" for user-local libvirt connection
 # to change root configuration:
 sudo vi /etc/libvirt/libvirt.conf
@@ -98,6 +98,10 @@ virsh --connect qemu:///system list --all   # as non-root on system connection
 virsh --connect qemu:///session list --all  # as non-root on session connection
   # NOTE: if current user is root, specifying qemu:///session will still use qemu:///system
 
+# list IP and MAC addresses of VMs on default network (the virbr0 bridge)
+virsh --connect 'qemu:///system' net-dhcp-leases default
+ip neigh show dev virbr0  # check ARP table for virbr0 bridge
+
 # check default connection used
 virsh uri
 sudo virsh uri
@@ -115,16 +119,52 @@ virsh domcapabilities
 qemu-img info myimage.qcow2
 ```
 
+### Set up user-local image/ISO storage with SELinux
+
+```sh
+# show existing SELinux file context policies for libvirt files
+sudo semanage fcontext --list | grep libvirt
+  # /home/[^/]+/\.local/share/libvirt/images(/.*)?  all files  unconfined_u:object_r:svirt_home_t:s0
+  # /var/lib/libvirt/images(/.*)?                   all files  system_u:object_r:virt_image_t:s0
+
+# create a directory named "user" for image pool
+mkdir -p "${HOME}/.local/share/libvirt/images/user"
+# ensure SELinux label is svirt_home_t
+ls -ldZ "${HOME}/.local/share/libvirt/images"
+
+# for directories without file context policy (e.g. ~/.images), either add a policy:
+sudo semanage fcontext --add --type svirt_home_t '/home/[^/]+/\.images(/.*)?'
+restorecon -Rv "${HOME}/.local/share/libvirt/images"  # and restore from policy
+# or set from a reference:
+chcon --recursive --reference "${HOME}/.local/share/libvirt/images" "${HOME}/.images"
+chcon --recursive --reference /var/lib/libvirt/images "/path/to/system/images"
+
+# create a storage pool named "user"
+virsh pool-define-as --name user --type dir --target "${HOME}/.images"
+virsh pool-start user
+virsh pool-autostart user
+virsh pool-list --all --details
+virsh pool-dumpxml user
+# create a volume
+virsh vol-create-as --pool user --name fedora.img --capacity 20G --allocation 20G --format raw --print-xml
+  # or --format qcow2
+virsh vol-list --pool user --details  # list files in pool
+```
+
 ### VM networks
 
 The default network (named `default` on `qemu:///system`) is created when first requested and it runs in NAT mode. An active socket starts the corresponding service on demand. The bridge interface `virbr0` and a dnsmasq server is created for the internal network. See network XML format: [libvirt.org/formatnetwork.html](https://libvirt.org/formatnetwork.html).
 
 ```sh
+# view default network definition
+cat /usr/share/libvirt/networks/default.xml
+
+systemctl help virtnetworkd.service
 systemctl status virtnetworkd.service
 sudo systemctl enable virtnetworkd.service --now # enable and start internal network
 reboot now
 
-ip a # check bridge virbr0
+ip addr show type bridge # check bridge virbr0
 ip route # check route table entry for virbr0
 firewall-cmd --get-active-zones # libvirt zone has interface virbr0
 sudo firewall-cmd --zone=libvirt --list-all
@@ -197,6 +237,11 @@ The host itself also uses the bridge as the default route to router. A slave con
 ```sh
 ip address show # e.g. enp1s0 with IP address
 nmcli connection show --active # e.g. "Wired enp1s0"
+
+# ensure ip_forward is set
+sysctl net.ipv4.ip_forward  # 1 if set
+echo 'net.ipv4.ip_forward = 1' | sudo tee --append /etc/sysctl.d/99-user.conf  # sets it
+sudo sysctl -p # reload configuration
 
 # create Linux bridge
 sudo ip link add br0 type bridge
@@ -293,7 +338,6 @@ virsh vol-delete --pool user --vol raw-disk.img
 virsh vol-create-as --pool user --name qcow2-disk.qcow2 --capacity 10G --format qcow2 --allocation 0 --prealloc-metadata 
 virsh vol-info --pool user --vol qcow2-disk.qcow2
 virsh vol-delete --pool user --vol qcow2-disk.qcow2
-
 ```
 
 ```sh
