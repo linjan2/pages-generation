@@ -932,11 +932,27 @@ curl http://example.com --form field1=@localfilename --form field2=value2
 ```
 
 ```sh
-# get headers and payload from file
+# use request headers and payload from files
 curl \
   -H @headers.txt \
   --data @payload.json \
   https://example.com
+
+# dump response headers and payload to files
+curl --dump-header /tmp/headers.txt --remote-name --output-dir /tmp --no-clobber https://example.com
+
+curl --config - <<EOF
+# --- fetch from two URLs ---
+url = "https://example.com"
+remote-name-all
+output-dir example
+create-dirs
+no-clobber
+user-agent = "superagent/1.0"
+next
+url = "example.com/docs/manpage.html"
+referer = "http://nowhereatall.example.com/"
+EOF
 ```
 
 #### curl proxy

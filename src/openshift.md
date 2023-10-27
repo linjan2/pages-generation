@@ -3430,10 +3430,17 @@ spec:
       subPath: file
     - name: secret-volume
       mountPath: /data
+    volumeDevices: # Block volumeModes
+    - name: pvc-block-volume
+      devicePath: /dev/xvda
+
   volumes:
   - name: pvc-volume
     persistentVolumeClaim:
       claimName: mypvc
+  - name: pvc-block-volume
+    persistentVolumeClaim:
+      claimName: myblockpvc
   - name: confimap-file-volume
     configMap:
       name: myconfigmap
