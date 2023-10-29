@@ -6083,9 +6083,9 @@ spec:
         path: '{{path}}'
       syncPolicy:
         automated:
-        allowEmpty: true
-        prune: true
-        selfHeal: true
+          allowEmpty: true
+          prune: true
+          selfHeal: true
       syncOptions:
       - PrunePropagationPolicy=foreground
       - ApplyOutOfSyncOnly=true
@@ -6126,9 +6126,9 @@ spec:
         path: '{{path}}' # the directory of current generator item
       syncPolicy:
         automated:
-        allowEmpty: true
-        prune: true
-        selfHeal: true
+          allowEmpty: true
+          prune: true
+          selfHeal: true
       syncOptions:
       - PrunePropagationPolicy=foreground
       - ApplyOutOfSyncOnly=true
