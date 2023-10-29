@@ -375,6 +375,19 @@ do
 done < <(find . -name '*.html')
 ```
 
+Use `select` to show a menu of numbered selections.
+
+```sh
+PS3='Select a number: '
+select VAR in A B C
+do
+  # VAR contains selection based on entered number; REPLY contains the input
+  echo you picked ${VAR} \(REPLY=$REPLY\)
+  break # exits select loop
+done
+if [ $? -eq 1 ]; then echo reply was EOF ; fi
+```
+
 ### trap
 
 ```sh
@@ -551,6 +564,14 @@ printf '%s, ' 10.1.{1..255}.{1..255} # 10.1.1.1, 10.1.1.2, 10.1.1.3, ...
 ```sh
 # make backup file (example.conf.YYYY-MM-dd.bak)
 cp example.conf{,.$(date +%F).bak}
+```
+
+### envsubst
+
+```sh
+echo 'MY_VAR=${MY_VAIR}' > input.txt
+export MY_VAR=abc
+envsubst '$MY_VAR' < input.txt > output.txt
 ```
 
 ## Pathname expansion (globbing)

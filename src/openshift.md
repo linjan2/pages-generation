@@ -1992,7 +1992,7 @@ spec:
 
 ```sh
 # exclude namespaces from default ingress controller
-oc patch ingresscontroller/default --patch '
+oc patch ingresscontroller/default -n openshift-ingress-operator --patch '
 spec:
   namespaceSelector:
     matchExpressions:
@@ -2000,6 +2000,11 @@ spec:
       operator: NotIn
       values:
       - sharded'
+
+# alternatively, add label expression on route selector
+oc patch ingresscontroller/default -n openshift-ingress-operator \
+  --type='merge' \
+  --patch '{"spec":{"routeSelector":{"matchExpressions":[{"key":"type","operator":"NotIn","values":["sharded"]}]}}}'
 ```
 
 Set `.spec.subdomain` to automatically get the correct ingress controller base domain.
