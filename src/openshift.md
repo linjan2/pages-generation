@@ -4263,8 +4263,6 @@ etcdctl check perf --load="s" # small
 etcdctl check perf --load="m" # medium
 etcdctl check perf --load="l" # large
 
-
-
 ETCDCTL_API=3 ETCDCTL_CACERT=/etc/kubernetes/pki/etdc/ca.crt \
 ETCDCTL_CERT=/etc/kubernetes/pki/etcd/server.ctr \
 ETCDCTL_KEY=/etc/kubernetes/pki/etcd/server.key \
@@ -4279,6 +4277,17 @@ etcdctl --endpoints=https://127.0.0.1:2379 get /registry/secrets/default/first
 oc debug node/master01
 chroot /host
 podman run --volume /var/lib/etcd:var/lib/etcd:Z quay.io/openshift-scale/etcd-perf
+```
+
+If the cluster API is down, ssh into a master node and run `etcdctl` in the pod named `etcdctl`.
+
+```sh
+ssh -i .ssh/key core@nodename
+sudo -i
+crictl ps --all
+crictl ps | grep etcdctl # find etcdctl Pod ID
+crictl exec -it 6da924b11863a sh -l
+etcdctl endpoint health
 ```
 
 #### Validate certificates
