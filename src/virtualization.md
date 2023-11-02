@@ -14,9 +14,9 @@ The **KVM** kernel module is a bare-metal hypervisor for kernel-based virtual ma
 
 Client tools:
 
-- `virsh`: commandline utility for libvirt.
+- `virsh`: command-line utility for libvirt.
 - `virt-manager`: graphical interface utility for libvirt.
-- `virt-install`: commandline utility for provisioning virtual machines.
+- `virt-install`: command-line utility for provisioning virtual machines.
 - `virt-viewer`: opens graphical console of a virtual machine.
 
 Check for virtualization support. AMD-V/Intel VT CPU virtualization should be enabled within BIOS settings.
@@ -145,8 +145,8 @@ virsh pool-start user
 virsh pool-autostart user
 virsh pool-list --all --details
 virsh pool-dumpxml user
-# create a volume
-virsh vol-create-as --pool user --name fedora.img --capacity 20G --allocation 20G --format raw --print-xml
+# create a volume (--print-xml to only output XML)
+virsh vol-create-as --pool user --name fedora.img --capacity 20G --allocation 20G --format raw
   # or --format qcow2
 virsh vol-list --pool user --details  # list files in pool
 ```
@@ -357,16 +357,16 @@ Create a VM connected to the a virtual network bridge with `virt-install`.
 
 ```sh
 virt-install \
-  --connect="qemu:///system" \
-  --name=fedora37 \
-  --vcpus=2 --memory=4096 \
-  --os-variant=fedora37 \
-  --os-type=linux \
-  --cdrom=/var/lib/libvirt/images/Fedora-Workstation-37/Fedora-Workstation-Live-x86-64-37-1.1.iso \
+  --connect 'qemu:///system' \
+  --name fedora37 \
+  --vcpus 2 --memory 4096 \
+  --os-variant fedora37 \
+  --os-type linux \
+  --cdrom /var/lib/libvirt/images/Fedora-Workstation-37/Fedora-Workstation-Live-x86-64-37-1.1.iso \
   --import \
-  --graphics=vnc,listen=127.0.0.1,port=5901 \
+  --graphics vnc,listen=127.0.0.1,port=5901 \
   --noautoconsole \
-  --disk='size=16' \
+  --disk '/var/lib/libvirt/images/fedora37.img/,size=16,format=raw' \
   --network bridge=virbr0
 
 virsh dumpxml fedora37 > vm.xml # save VM as XML configuration
