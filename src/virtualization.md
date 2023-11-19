@@ -181,7 +181,6 @@ virsh net-dumpxml default
 virsh net-dhcp-leases default # show DHCP leases on default network
 
 # remove default network
-virsh net-stop default
 virsh net-destroy default
 virsh net-undefine default
 sudo systemctl disable virtnetworkd.socket --now
@@ -226,6 +225,61 @@ virsh attach-interface --domain myvm --source isolated0 --type network --model v
 virsh domiflist myvm # show virtual interfaces of VM
 # detach network with the VM's interface MAC address
 virsh detach-interface --domain myvm --type network --mac '52:54:00:47:2f:eb' --config
+```
+
+#### Resolve VM DNS names on virbr0
+
+Update host name on the VM and then shut it down.
+
+```sh
+sudo hostnamectl example.linda-jansson.lo
+```
+
+Add `<domain>` tag in `default` network. `virsh --connect qemu:///system net-edit default`.
+
+```xml
+<network>
+  <name>default</name>
+  <uuid>956d0c61-1707-436f-8b5c-9af088a5aabe</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:b1:54:fe'/>
+  <!-- Add domain name -->
+  <domain name='linda-jansson.lo' localOnly='yes'/>
+  <!--  -->
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.122.2' end='192.168.122.254'/>
+    </dhcp>
+  </ip>
+</network>
+```
+
+```sh
+ecoh 'server=/linda-jansson.lo/192.168.122.1' | sudo tee /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
+cat <<<'
+[main]
+dns=dnsmasq
+' | sudo tee /etc/NetworkManager/conf.d/localdns.conf
+
+systemctl restart systemd-resolved
+
+# add DNS to virbr0 manually
+systemd-resolve --interface virbr0 --set-dns 192.168.122.1 --set-domain linda-jansson.lo
+resolvectl status
+  # Link 8 (virbr0)
+  # Current Scopes: none
+  #   Protocols: -DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+  #   DNS Servers: 192.168.122.1
+  #   DNS Domain: linda-jansson.lo
+cat /etc/resolv.conf # search linda-jansson.lo home
+```
+
+Check that DNS lookup is working on both VM and host.
+
+```sh
+nslookup example.linda-jansson.lo 192.168.122.1
+host example.linda-jansson.lo
 ```
 
 #### Linux bridge for making VMs visible on LAN

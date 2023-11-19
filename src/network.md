@@ -13,9 +13,6 @@
 ## Cheat sheets
 
 ```sh
-# display all network addresses on all network interfaces (except loopback and IPv6 link-local addresses)
-hostname --all-ip-addresses
-
 # get your external IP address
 curl ifconfig.me
 curl https://icanhazip.com
@@ -120,6 +117,18 @@ foreach ($port in $ports) {
   }
 }
 ```
+
+### OSI model
+
+|   | OSI           | TCP/IP      | Examples |
+|:-:|:--------------|:------------|:---------|
+| 1 | Application   | Application |  HTTP, FTP, Telnet, NTP, LDAP, DNS, DHCP, RIP, SIP, SMTP, SSH, TLS/SSL  |
+| 2 | Presentation  | -||-        | -||- |
+| 3 | Session       | -||-        | -||- |
+| 4 | Transport     | Transport   | TCP, UDP |
+| 5 | Network       | Internet    | IPv4, IPv6, ICMP, IGMP, IPsec |
+| 6 | Data link     | Link        | MAC, PPP, NDP, ARP, Ethernet, Wi-Fi, DOCSIS, Tunnels |
+| 7 | Physical      | -||-        | -||- |
 
 ## Subnetting
 
@@ -1047,7 +1056,9 @@ nc -vv -l # Computer with public IP
 nc -v public_host -e /bin/bash # Computer behind firewall
 
 # run a server
-nc -l -p 80
+nc -l -p 8080
+# run client that sends to server
+echo 'hello' | nc 10.128.54.212 8080
 
 # port scanning; -z to not send any data
 nc -z -v 10.10.8.8 20-80
@@ -1129,6 +1140,8 @@ ethtool -i enp6s0
 ```
 
 ### NetworkManager
+
+https://docs.oracle.com/en/operating-systems/oracle-linux/8/network/network-ConfiguringtheSystemsNetwork.html#ol-netconf-nic
 
 ```sh
 systemctl status NetworkManager.service
@@ -1531,12 +1544,26 @@ podman unshare --rootless-cni ip address show
 - [RFC 2782 - A DNS RR for specifying the location of services (DNS SRV)](https://www.rfc-editor.org/rfc/rfc2782)
 
 ```sh
-cat /etc/hosts
-getent ahosts example.com # Name Service Switch (NSS) entry
+hostname # show the system's host name
+hostname --all-ip-addresses # show all network addresses (except loopback and IPv6 link-local addresses)
+hostname --all-fqdns # show the system's FQDNs (i.e. hostname.domain)
+dnsdomainname # show the system's DNS domain name
+
+cat /etc/hostname # show static hostname
+hostnamectl hostname host.example.com # set static hostname
+hostnamectl status
+```
+
+```sh
+cat /etc/hosts # local hostname resolution
+cat /etc/resolv.conf # DNS resolver lookups
+cat /etc/nsswitch.conf
+getent ahosts host.example.com # Name Service Switch (NSS) entry
 getent ahostsv4 $(hostname) # IPv4 for local server
-dig -4 +short example.com
-ipcalc --lookup-host example.com --no-decorate --ipv6
-nslookup example.com
+dig -4 +short host.example.com
+host -v -t ANY host.example.com
+ipcalc --lookup-host host.example.com --no-decorate --ipv6
+nslookup host.example.com
 
 # reverse DNS
 dig +short -x 192.168.0.123
@@ -1547,8 +1574,10 @@ for i in 192.168.0.{1..254}; do echo -e "$i\n$(dig +short -x $i)"; done
 ipcalc --reverse-dns 192.168.0.0/24
 
 # query record type
-dig -t A example.com
-dig -t SRV example.com
+dig -t A host.example.com
+dig -t SRV host.example.com
+host -t SOA host.example.com
+host -v -t CNAME host.example.com # alias
 ```
 
 ```sh

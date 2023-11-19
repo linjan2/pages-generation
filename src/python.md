@@ -44,7 +44,8 @@ python -m SimpleHTTPServer 9001
 ```
 
 ```py
-help(print) # show help page on modules/functions
+help(print) # show help page on functions
+help("ensurepip") # show help page on modules
 dir() # print names in the current scope
 dir(obj) # print module/object attributes
 locals() # returns a dictionary containing the current scope's local variables
