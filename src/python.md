@@ -19,8 +19,10 @@ echo ${VIRTUAL_ENV}  # path to venv
 python -V
 pip -V
 
-# upgrade pip
+# install pip if missing
+python -m ensurepip --upgrade
 pip install --upgrade pip
+
 # list the active configuration (site in /path/to/venv-3.11.3/pip.conf)
 pip config debug
 pip config list -v

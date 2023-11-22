@@ -134,6 +134,24 @@ shopt # show all with status
 shopt extglob # show extglob status
 ```
 
+Handle error and get exit code when using `errexit`:
+
+```sh
+# alt. run ':' with '$?' as argument on error
+set -o errexit
+{ some_command_that_may_error its_arg && : 0 ; } || : $?
+echo $_ # last argument to previous command holds the return code
+
+# alt. disable errexit temporarily
+set +o errexit
+some_command_that_may_error its_arg
+echo $?
+set -o errexit
+
+# alt. trap on ERR and let script exit on the triggering exit code
+trap 'handle_error' ERR  # call a function on SIGERR
+```
+
 Check that input variables are set with the no-op command `:`.
 
 ```sh

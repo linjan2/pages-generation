@@ -50,6 +50,19 @@ fi
 autoload -Uz compinit && compinit
 ```
 
+### Zsh options
+
+```sh
+man zshoptions # zsh options used with `setopt`
+setopt # show options that are changed from their default
+setopt NOGLOB # disable pathname expansion
+unsetopt NOGLOB # unset option
+```
+
+> Options names are case insensitive and underscores are ignored. Invert an options with the prefix `no`.
+
+### Extended file attributes
+
 Check extended file attributes. Downloaded files are in quarantine.
 
 ```sh
@@ -88,9 +101,11 @@ defaults write com.apple.LaunchServices LSQuarantine -bool false
 defaults write -g AppleLocale en_US
 ```
 
+### Diskutil
+
 ```sh
 # create and mount a 479 MB HFS+ volume ramdisk
-diskutil erasevolume HFS+ ramDisk500mb $(hdiutil attach -nomount ram://980000)
+diskutil eraseVolume HFS+ ramDisk500mb $(hdiutil attach -nomount ram://980000)
 # run chrome with the ramdisk as user-data-dir
 open a 'Google Chrome Canary' --args --user-data-dir=/Volumes/ramDisk500mb
 ```
@@ -164,7 +179,7 @@ podman login --get-login docker.io
 ```sh
 python3 -m venv --prompt 'py3' ${HOME}/bin/py3venv
 . ${HOME}/bin/py3venv/bin/activate
-eco ${VIRTUAL_ENV}  # path to venv
+echo ${VIRTUAL_ENV}  # path to venv
 python -V
 pip list --outdated
 pip install --upgrade pip

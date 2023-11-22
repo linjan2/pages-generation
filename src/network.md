@@ -403,7 +403,7 @@ openssl pkcs12 -in file.p12 -out key.pem -nocerts -passin 'pass:123'
 # remove password protection on private key
 openssl rsa -in password_protected_tls.key -out tls.key
 
-# generate a private key with passphrase from different sources
+# generate a private key with passphrase from different sources ("BEGIN PRIVATE KEY" PKCS#8)
 man 1 openssl-passphrase-options
 man 1 openssl-genpkey
 # from literal
@@ -416,6 +416,11 @@ openssl genpkey -algorithm RSA -out private.pem -outform PEM -pass 'file:pass'
 openssl genpkey -algorithm RSA -out private.pem -outform PEM -pass 'fd:3' 3<<<'123'    
 # from standard input
 openssl genpkey -algorithm RSA -out private.pem -outform PEM -pass 'stdin' <<<'123'    
+
+# set random source ("BEGIN RSA PRIVATE KEY" PKCS#1)
+openssl genrsa \
+  -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime \
+  2048 > private.pem 2> /dev/null
 
 # generate a public RSA key from private key
 openssl rsa -in private.pem -pubout -out public.pem -outform PEM
