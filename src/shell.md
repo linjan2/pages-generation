@@ -406,10 +406,13 @@ false # run command that fails
 ```
 
 ```sh
+# remove file on script exit
+FILE=$(mktemp)
+trap "/bin/rm -f ${FILE}" TERM QUIT EXIT INT
 # remove trap for SIGTERM and SIGINT
 trap - TERM INT
 # trap all signals
-trap 'kill -9 ${SPIN_PID}' $(seq 0 15)
+trap 'do_something' $(seq 0 15)
 ```
 
 ## Variable substitutions

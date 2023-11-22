@@ -8,6 +8,180 @@
 -->
 # Linux
 
+- Boot process
+  - GRUB2, grubby
+  - UEFI Secure Boot and Trusted Execution
+  - kernels
+  - reset passwords
+  - backup and recovery
+  - disk partitioning
+  - Time synchronization
+  - Network boot; iPXE, PXE, https://docs.fogproject.org/en/latest/
+  - drivers management
+- Software management
+  - package management and repositories
+  - Verifying file authenticity
+  - installing X
+  - shared libraries
+  - core dumps, gdb, strace, ptrace
+- Services
+  - Systemd
+  - Quadlet
+  - sshd
+  - screen
+  - OpenLDAP
+  - Kerberos
+  - DNS, DHCP
+  - Nginx Reverse proxy
+  - Apache WSGI
+- Storage
+  - Write Linux ISO image to USB drive
+  - file systems, mounting
+  - lvm, ZFS RAID, iSCSI, GlusterFS, disk encryption
+  - databases
+  - luks Encrypted file systems
+- Monitoring
+  - syslog, rsyslogd
+  - sending logs to Splunk
+  - SELinux, audit logs
+  - Prometheus + Grafana
+  - OpenSearch
+  - Wazuh
+  - System Activity Reports
+- Automation
+  - Puppet, facter
+
+## Write Linux ISO image to USB drive
+
+```sh
+lsblk # find USB device on filesystem mounts
+
+sudo ddrescue -f -v os.iso /dev/sdx
+
+```
+
+## dotfiles
+
+```sh
+python -V
+python -m venv ~/.bin/venv3.11.6
+{ cd ~/.bin ; ln -s venv3.11.6 venv ; }
+. ~/.bin/venv/bin/activate
+pip install ansible-core ansible-vault
+```
+
+```yaml
+# playbook.yml
+```
+
+```sh
+
+```
+
+## Certificates
+
+### Fedora / RHEL / CentOS / Oracle Linux
+
+```sh
+# copy PEM or DER file certificate bundles
+# either lower priority /usr
+cp cert.pem /usr/share/pki/ca-trust-source/anchors/
+# or higher priority /etc
+cp cert.pem /etc/pki/ca-trust/source/anchors/
+update-ca-trust
+```
+
+### Debian/Ubuntu
+
+```sh
+apt-get -y install ca-certificates --no-install-recommends
+
+# copy non-bundled PEM certificates with file extension `.crt`
+sudo cp ca.pem /usr/local/share/ca-certificates/ca.crt
+sudo update-ca-certificates # updates certificates in /etc/ssl/certs
+```
+
+### letsencrypt
+
+## Package managers
+
+### dnf/yum/rpm
+
+```sh
+dnf repoquery --querytags # list query tags
+dnf --quiet repoquery --installed --queryformat='%{name} %{evr} %{from_repo} %{arch}'
+dnf --quiet repoquery --installed --queryformat='---
+description        = %{description}
+evr                = %{evr}
+from_repo          = %{from_repo}
+group              = %{group}
+installsize        = %{installsize}
+installtime        = %{installtime}
+license            = %{license}
+name               = %{name}
+obsoletes          = %{obsoletes}
+packager           = %{packager}
+provides           = %{provides}
+reason             = %{reason}
+recommends         = %{recommends}
+release            = %{release}
+repoid             = %{repoid}
+reponame           = %{reponame}
+requires           = %{requires}
+size               = %{size}
+source_debug_name  = %{source_debug_name}
+source_name        = %{source_name}
+sourcerpm          = %{sourcerpm}
+suggests           = %{suggests}
+summary            = %{summary}
+supplements        = %{supplements}
+url                = %{url}
+vendor             = %{vendor}
+version            = %{version}
+'
+```
+
+#### Import repository keys
+
+```sh
+rpm --import https://repository.nixys.ru/repository/gpg/public.gpg.key
+```
+
+
+### apt/deb
+
+```sh
+apt install dirmngr gnupg apt-transport-https ca-certificates
+
+apt-key adv --fetch-keys https://repository.nixys.ru/repository/gpg/public.gpg.key
+
+echo "deb [arch=amd64] https://repository.nixys.ru/repository/deb-stretch/ stretch main" > /etc/apt/sources.list.d/repository.nixys.ru.list
+
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    fakeroot \
+    && rm -rf /var/lib/apt/lists/*
+
+apt-get -yqq purge 'my-package'
+```
+
+```sh
+export DEBIAN_FRONTEND=noninteractive
+apt-get -yq install packagename
+rm -rf /var/lib/apt/lists/*
+```
+
+```yml
+- name: Ensure packages are installed
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    update_cache: true
+    cache_valid_time: 3600 # don't "apt-get update" within 1h
+  loop:
+    - htop
+    - ngrep
+    - vim
+```
+
 ## Verifying file authenticity
 
 > The checksum file format contains multiple lines of:
@@ -43,139 +217,136 @@ gpg --verify SHASUMS256.txt.sig SHASUMS256.txt
 curl -O https://nodejs.org/dist/v18.7.0/SHASUMS256.txt.asc
 ```
 
-## Package managers
-
-### dnf/yum/rpm
+## GPG key
 
 ```sh
-dnf repoquery --querytags # list query tags
-dnf --quiet repoquery --installed --queryformat='%{name} %{evr} %{from_repo} %{arch}'
-dnf --quiet repoquery --installed --queryformat='\
-  %{arch} \
-  %{buildtime} \
-  %{conflicts} \
-  %{debug_name} \
-  %{description} \
-  %{downloadsize} \
-  %{enhances} \
-  %{epoch} \
-  %{evr} \
-  %{from_repo} \
-  %{group} \
-  %{installsize} \
-  %{installtime} \
-  %{license} \
-  %{name} \
-  %{obsoletes} \
-  %{packager} \
-  %{provides} \
-  %{reason} \
-  %{recommends} \
-  %{release} \
-  %{repoid} \
-  %{reponame} \
-  %{requires} \
-  %{size} \
-  %{source_debug_name} \
-  %{source_name} \
-  %{sourcerpm} \
-  %{suggests} \
-  %{summary} \
-  %{supplements} \
-  %{url} \
-  %{vendor} \
-  %{version}'
+# see available entropy
+cat /proc/sys/kernel/random/entropy_avail
+# generate entropy
+find / > /dev/null
 ```
 
-#### Import repository keys
-
-```sh
-rpm --import https://repository.nixys.ru/repository/gpg/public.gpg.key
-```
-
-
-### apt/deb
-
-```sh
-apt install dirmngr gnupg apt-transport-https ca-certificates
-
-apt-key adv --fetch-keys https://repository.nixys.ru/repository/gpg/public.gpg.key
-
-echo "deb [arch=amd64] https://repository.nixys.ru/repository/deb-stretch/ stretch main" > /etc/apt/sources.list.d/repository.nixys.ru.list
-
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    fakeroot \
-    && rm -rf /var/lib/apt/lists/*
-
-apt-get -yqq purge 'my-package'
-```
-
-```sh
-export DEBIAN_FRONTEND=noninteractive
-apt-get -yq install packagename
-rm -rf /var/lib/apt/lists/*
-
-```
-
-
-## Write Linux ISO image to USB drive
-
-```sh
-lsblk # find USB device on filesystem mounts
-
-sudo ddrescue -f -v os.iso /dev/sdx
-
-```
+## Suckless
 
 ## Makefiles
 
+## CMake
 
-
-## Camera tethering on Linux
+## Core dumps
 
 ```sh
-sudo dnf install gphoto2
+# sysctl(8) parameter kernel.core_pattern.
+cat /usr/lib/sysctl.d/50-coredump.conf
+cat /proc/sys/kernel/core_pattern
+ls -lrt /path/to/core/files/
 
-cat ~/.gphoto/settings
-gphoto2 --list-config
-gphoto2 --get-config shutterspeed
-gphoto2 --get-config capturetarget
+file /path/to/core/files/corefile
 
-gphoto2 --auto-detect
-gphoto2 --summary
-gphoto2 --list-files
-gphoto2 --get-all-files
+gdb -batch -ex 'bt' /path/to/binary /path/to/core/files/corefile
 ```
 
-`gphoto-hook.sh`:
+> Core dumps can be written to the journal or saved as a file. In both cases, they can be retrieved for further processing, for example in gdb(1). See coredumpctl(1), in particular the list and debug verbs.
 
 ```sh
-#!/bin/sh
-case "${ACTION}" in
-  start)
-  ;;
-  download)
-    echo "Downloaded image ${PWD}/${ACTION}"
-  ;;
-esac
+man systemd-coredump
+man 5 core
+vi /usr/lib/tmpfiles.d/systemd.conf
+vi /etc/systemd/coredump.conf
+ls /var/lib/systemd/coredump/
+
+coredumpctl
+journalctl MESSAGE_ID=fc2e22bc6ee647b6b90729ab34a250b1 -o verbose
 ```
 
 ```sh
-# tether and capture on camera shoot
-gphoto2 --capture-tethered --hook-script=./gphoto-hook.sh
+pgrep -l myprogram
+sudo gdb -p ${PID}
+  # gcore myprogram.dump
+  # exit
+strings myprogram.dump | grep 'abc'
 
-# save on SD card:
-gphoto2 --capture-image
-# save on SD card, download to computer, then delete from camera
-gphoto2 --capture-image-and-download --filename %Y%m%d%H%M%S.arw
-# only use camera RAM for storing images (not SD card)
-gphoto2 --set-config capturetarget=0
-
-
-# if multiple devices are detected use --camera
-gphoto2 --auto-detect
-gphoto2 --trigger-capture --camera='Sony Alpha-A6000'
 ```
+
+```sh
+# run python with CAP_NET_RAW
+sudo -E capsh --caps="cap_setpcap,cap_setuid,cap_setgid+ep cap_net_raw+eip" --keep=1 --user="$USER" --addamb="cap_net_raw" -- -c /usr/bin/python3
+
+# run GDB with CAP_SYS_PTRACE
+sudo -E capsh --caps="cap_setpcap,cap_setuid,cap_setgid+ep cap_sys_ptrace+eip" --keep=1 --user="$USER" --addamb="cap_sys_ptrace" --shell=/usr/bin/gdb -- -p <pid>
+```
+
+## SSH
+
+```sh
+ssh-keygen -lf ~/.ssh/known_hosts # show fingerprints in public key file
+ssh-keygen -R example -f ~/.ssh/known_hosts # remove keys of hostname example
+ssh-copy-id -i id.pub user@example
+w --from --ip-addr
+vi /etc/ssh/sshd_config
+systemctl reload sshd.service
+```
+
+```default
+PermitRootLogin prohibit-password
+```
+
+## screen
+
+Run `screen` on remote system to manage sessions there.
+
+```sh
+sudo dnf install screen
+
+screen # create session
+  # crtl+a d  : detach
+  # ctrl+d    : exit
+  # ctrl+a ?  : show keybindings
+  # ctrl+a :  : command mode
+  # ctrl+c    : create display
+  # ctrl+n    : next display
+  # ctrl+p    : previous display
+  # ctrl-a *  : list displays
+  # ctrl-a s  : split horizontally
+  # ctrl-a |  : split vertically
+  # ctrl+Tab  : switch split
+screen -list # list sessions
+screen -r # resume session
+screen -d  # detach a session
+
+# run long running command in detached mode (keep alive afterwards with shell)
+screen -dm bash -c 'mysql -u root db_name < backup.sql; exec sh'
+```
+
+Show progress bar with `pv`.
+
+```sh
+sudo dnf install pv
+pv backup.sql | mysql -u root db_name
+  # 1.69GiB 6:33:38 [41.5kB/s] [==============>          ] 58% ETA 4:45:03
+```
+
+User configuration is at: `${HOME}/.screenrc`. See example in `/etc/screenrc`.
+
+## Install X
+
+### xfreerdp
+
+
+
+## Server
+
+- DNS name server
+- FTP server
+- Web server
+- File and storage server (CIFS, SMB, NFS, iSCSI, iSER, iSNS network storage server)
+- Windows file server
+- Mail server (IMAP or SMTP)
+- Network file system client
+- DHCP, Kerberos and NIS network server
+- Secret vault
+- IDP, Keycloak, OpenID Connect
+- Automatic ISO installation server
+
 
 ## Prometheus monitoring
 
@@ -242,35 +413,47 @@ Configuration file:
   data_format = "prometheus"
 ```
 
-## Ansible
 
-[How to automate simple tasks on Linux using Ansible](https://computingforgeeks.com/how-to-automate-simple-repetitive-tasks-using-ansible/)
+## Camera tethering on Linux
 
 ```sh
-ssh-keygen -lf ~/.ssh/known_hosts # show fingerprints in public key file
-ssh-keygen -R example -f ~/.ssh/known_hosts # remove keys of hostname example
-ssh-copy-id -i id.pub user@example
-w --from --ip-addr
-vi /etc/ssh/sshd_config
-systemctl reload sshd.service
+sudo dnf install gphoto2
+
+cat ~/.gphoto/settings
+gphoto2 --list-config
+gphoto2 --get-config shutterspeed
+gphoto2 --get-config capturetarget
+gphoto2 --auto-detect
+gphoto2 --summary
+gphoto2 --list-files
+gphoto2 --get-all-files
 ```
 
-```
-PermitRootLogin prohibit-password
+`gphoto-hook.sh`:
+
+```sh
+#!/bin/sh
+case "${ACTION}" in
+  start)
+  ;;
+  download)
+    echo "Downloaded image ${PWD}/${ACTION}"
+  ;;
+esac
 ```
 
-## Server
+```sh
+# tether and capture on camera shoot
+gphoto2 --capture-tethered --hook-script=./gphoto-hook.sh
 
-- DNS name server
-- FTP server
-- Web server
-- File and storage server (CIFS, SMB, NFS, iSCSI, iSER, iSNS network storage server)
-- Windows file server
-- Mail server (IMAP or SMTP)
-- Network file system client
-- DHCP, Kerberos and NIS network server
-- Secret vault
-- IDP, Keycloak, OpenID Connect
-- Automatic ISO installation server
-- package repositories
-- letsencrypt
+# if multiple devices are detected use --camera
+gphoto2 --auto-detect
+gphoto2 --trigger-capture --camera='Sony Alpha-A6000'
+
+# save on SD card:
+gphoto2 --capture-image
+# save on SD card, download to computer, then delete from camera
+gphoto2 --capture-image-and-download --filename %Y%m%d%H%M%S.arw
+# only use camera RAM for storing images (not SD card)
+gphoto2 --set-config capturetarget=0
+```
