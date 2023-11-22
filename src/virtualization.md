@@ -256,7 +256,7 @@ Add `<domain>` tag in `default` network. `virsh --connect qemu:///system net-edi
 ```
 
 ```sh
-ecoh 'server=/linda-jansson.lo/192.168.122.1' | sudo tee /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
+echo 'server=/linda-jansson.lo/192.168.122.1' | sudo tee /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
 cat <<<'
 [main]
 dns=dnsmasq

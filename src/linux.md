@@ -45,11 +45,49 @@ curl -O https://nodejs.org/dist/v18.7.0/SHASUMS256.txt.asc
 
 ## Package managers
 
-### dnf/yum
+### dnf/yum/rpm
 
-### rpm
+```sh
+dnf repoquery --querytags # list query tags
+dnf --quiet repoquery --installed --queryformat='%{name} %{evr} %{from_repo} %{arch}'
+dnf --quiet repoquery --installed --queryformat='\
+  %{arch} \
+  %{buildtime} \
+  %{conflicts} \
+  %{debug_name} \
+  %{description} \
+  %{downloadsize} \
+  %{enhances} \
+  %{epoch} \
+  %{evr} \
+  %{from_repo} \
+  %{group} \
+  %{installsize} \
+  %{installtime} \
+  %{license} \
+  %{name} \
+  %{obsoletes} \
+  %{packager} \
+  %{provides} \
+  %{reason} \
+  %{recommends} \
+  %{release} \
+  %{repoid} \
+  %{reponame} \
+  %{requires} \
+  %{size} \
+  %{source_debug_name} \
+  %{source_name} \
+  %{sourcerpm} \
+  %{suggests} \
+  %{summary} \
+  %{supplements} \
+  %{url} \
+  %{vendor} \
+  %{version}'
+```
 
-Import repository keys:
+#### Import repository keys
 
 ```sh
 rpm --import https://repository.nixys.ru/repository/gpg/public.gpg.key
