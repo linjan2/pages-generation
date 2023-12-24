@@ -122,6 +122,10 @@ set -Eeuo pipefail # short version of options above
 set -o xtrace   # (-x) display ${PS4} followed by the command and its expanded arguments
 set -o noexec   # (-n) read commands but do not execute them (for syntax check)
 set -o noglob   # (-f) disable pathname expansion
+set -o verbose  # (-v) print shell input lines as they are read
+
+# set xtrace prefix
+export PS4='    +\t $BASH_SOURCE:$LINENO: ${FUNCNAME[0]:+${FUNCNAME[0]}:}'
 
 shopt -s inherit_errexit  # command substitution inherits the value of the errexit option
 shopt -s expand_aliases   # enable aliases
@@ -382,6 +386,17 @@ OTHER=$(awk -v RS=':' -v ORS=' ' '$0 !~ /^"-/' <<<"${ARGS}")
 ```sh
 read -p 'Enter the number: ' NUM
 echo Number = ${NUM}
+
+echo 'Are you sure? [y/N] '
+read -r ANSWER
+case "${ANSWER}" in
+  [yY][eE][sS]|[yY])
+    # ...
+    ;;
+  *)
+    # ...
+    ;;
+esac
 ```
 
 Read lines of input from file:
