@@ -60,14 +60,6 @@ export https_proxy=${http_proxy}
 export HTTPS_PROXY=${http_proxy}
 ```
 
-| OCI layer | Name | Examples |
-|:---:|:---------------------------|:------------|
-| L1  | physical layer     | 10 Base T, 802.11 |
-| L2  | (data) link layer  | Ethernet, WiFi; MAC addresses |
-| L3  | network layer      | IPv4, IPv6, ARP, ICMP; IP addresses |
-| L4  | transport layer    | UDP, TCP; ports |
-| L7  | application layer  | DNS, DHCP, HTTP, SSH; hostnames |
-
 ### Windows
 
 ```bat
@@ -122,13 +114,13 @@ foreach ($port in $ports) {
 
 |   | OSI           | TCP/IP      | Examples |
 |:-:|:--------------|:------------|:---------|
-| 1 | Application   | Application |  HTTP, FTP, Telnet, NTP, LDAP, DNS, DHCP, RIP, SIP, SMTP, SSH, TLS/SSL  |
-| 2 | Presentation  | -||-        | -||- |
-| 3 | Session       | -||-        | -||- |
-| 4 | Transport     | Transport   | TCP, UDP |
-| 5 | Network       | Internet    | IPv4, IPv6, ICMP, IGMP, IPsec |
-| 6 | Data link     | Link        | MAC, PPP, NDP, ARP, Ethernet, Wi-Fi, DOCSIS, Tunnels |
-| 7 | Physical      | -||-        | -||- |
+| L7 | Application   | Application |  HTTP, FTP, Telnet, NTP, LDAP, DNS, DHCP, RIP, SIP, SMTP, SSH, TLS/SSL  |
+| L6 | Presentation  | -||-        | -||- |
+| L5 | Session       | -||-        | -||- |
+| L4 | Transport     | Transport   | TCP, UDP |
+| L3 | Network       | Internet    | IPv4, IPv6, ICMP, ARP, IGMP, IPsec |
+| L2 | Data link     | Link        | MAC, PPP, NDP, ARP, Ethernet (10 Base T), Wi-Fi (802.11), DOCSIS, Tunnels |
+| L1 | Physical      | -||-        | -||- |
 
 ## Subnetting
 
@@ -245,6 +237,9 @@ AllowGroups sshgroup
 
 ClientAliveInterval 300   # send an alive message to the client at five minute interval
 ClientAliveCountMax 2     # disconnect after 2 alive message
+
+# trusted CA certificate for client signed keys
+TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
 ```
 
 ```sh
@@ -1108,6 +1103,8 @@ tcpdump -qnni br0
 ```sh
 # dump socket statistics
 ss --tcp --udp --listening --processes --numeric # -tulpn
+# check open ports
+ss --threads --all --numeric
 ```
 
 ## Configuration
@@ -1117,6 +1114,11 @@ ss --tcp --udp --listening --processes --numeric # -tulpn
 ```sh
 # Ethernet PCI device information
 lspci | grep -i eth
+
+# show device driver
+ethtool -i enp1s0
+# show network hardware configuration
+lshw -class network
 
 # show WiFi device capabilities
 iw dev wlp8s0 info # by interface name
@@ -1488,7 +1490,7 @@ firewall-cmd --permanent --zone=public --add-masquerade
 firewall-cmd --permanent --zone=internal --add-source=192.168.10.0/24
 # or use a "direct" iptables configuration:
 # firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s 192.168.10.0/24
-# Add services offered by the gateway. eg if the gateway is acting as a DHCP server and web server:
+# Add services offered by the gateway. E.g. if the gateway is acting as a DHCP server and web server:
 firewall-cmd --permanent --zone=internal --add-service=dhcp
 firewall-cmd --permanent --zone=internal --add-service=http
 firewall-cmd --reload
