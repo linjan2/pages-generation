@@ -41,6 +41,8 @@ oc get clusterversion
 oc version # shows client and server Kubernetes version
 # get kubernetes version of a specific release (requires podman and access to release image registry)
 oc adm release info 4.11.43 -o jsonpath='{.displayVersions.kubernetes.Version}{"\n"}'
+# get kubelet version
+oc get nodes -o=jsonpath=$'{range .items[*]}{@.metadata.name}: {@.status.nodeInfo.kubeletVersion}\n{end}'
 
 # get install-config
 oc extract cm/cluster-config-v1 -n kube-system --to=-
@@ -419,6 +421,12 @@ oc patch configmap admin-acks -n openshift-config --type=merge \
 ```
 
 > Alerts `APIRemovedInNextReleaseInUse` and `APIRemovedInNextEUSReleaseInUse` are fired when deprecated API version in use are detected.
+
+`APIRequestCount` is Openshift-specific. For Kubernetes, filter the metrics from the current instance of the API server to show requests for deprecated APIs.
+
+```sh
+kubectl get --raw /metrics | prom2json | jq '.[] | select(.name=="apiserver_requested_deprecated_apis").metrics[].labels'
+```
 
 ## API server
 
@@ -1622,10 +1630,10 @@ spec:
         node-role.kubernetes.io/infra: ""
     tolerations:
     - effect: NoSchedule
-      key: infra
+      key: node-role.kubernetes.io/infra
       value: reserved
     - effect: NoExecute
-      key: infra
+      key: node-role.kubernetes.io/infra
       value: reserved
     - effect: NoSchedule
       key: node.kubernetes.io/memory-pressure
@@ -2638,12 +2646,6 @@ Automatic node taints:
 - `node.kubernetes.io/unschedulable`: node is unschedulable (`node.spec.unscheduable: true`).
 - `node.cloudprovider.kubernetes.io/uninitialized`: before a cloud-controller-manager initializes the node.
 
-Effects:
-
-- `NoExecute`
-- `NoSchedule`
-- `PreferNoSchedule`
-
 Pod tolerations:
 
 ```yaml
@@ -2673,6 +2675,12 @@ spec:
     operator: Exists
     tolerationSeconds: 120
   
+  # tolerate effects with any key
+  - effect: NoSchedule
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+
   # tolerate everything (set on DaemonSets)
   - operator: Exists
 ```
@@ -2696,7 +2704,7 @@ spec:
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100
         podAffinityTerm:
-          topologyKey: kubernetes.io/hostname # node label to consider pods co-located
+          topologyKey: kubernetes.io/hostname # node label to consider pods co-located (node pools)
           labelSelector: # pod selector
             matchLabels:
               app: example
@@ -4162,6 +4170,7 @@ oc adm drain NODE_NAME --ignore-daemonsets --force --delete-emptydir-data --disa
   # --force when there are unmanaged pods (no controller) on the node.
   # --delete-emptydir-data when there are pods using emptyDir (its data is lost).
   # --disable-eviction when there are PDBs blocking eviction.
+  # --grace-period=1 when overriding pod termination seconds.
 
 # mark node schedulable again
 oc adm uncordon NODE_NAME
@@ -4337,8 +4346,8 @@ If the API server is not working, SSH into nodes and use CRI-O CLI or `runc` to 
 ```sh
 oc get nodes -L kubernetes.io/hostname
 # nodes will be tainted as 'accessed'
-ssh -i ~/.ssh/ssh_key core@<node-host> 'crictl info' # run one command
-ssh -i ~/.ssh/ssh_key core@<node-host>
+ssh -i ssh_key core@NODE 'crictl info' # run one command
+ssh -i ssh_key core@NODE
 crictl info
 crictl ps --all | grep machine-config-daemon
 runc list
@@ -4380,6 +4389,33 @@ chroot /host crictl inspect ${CONTAINER_ID} | grep -i pid
 # on node, run a command in container network namespace
 nsenter --target ${PID} --net ip a
 nsenter -t ${PID} -n tcpdump -nnvv -i eth0 port 8080 -w pod.pcap
+```
+
+#### Clear corrupt storage overlay directories from a node
+
+Drain the node of pods and then SSH into it. Disable the `crio` and `kubelet` services, and then remove container storage.
+
+```sh
+oc adm drain NODE --ignore-daemonsets --delete-local-data --force --grace-period=1
+ssh -i ssh_key core@NODE
+sudo su -
+
+systemctl disable crio
+systemctl disable kubelet
+reboot
+
+ssh -i ssh_key core@NODE
+sudo su -
+
+rm -rf /var/lib/containers/storage/*
+systemctl enable crio
+systemctl enable kubelet
+systemctl start crio
+systemctl start kubelet
+exit
+exit
+
+oc adm uncordon NODE
 ```
 
 #### Must-gather
@@ -5003,7 +5039,8 @@ kind: CronJob
 metadata:
   name: example
 spec:
-  schedule: "0 8 * * 1" # monday 08:00
+  schedule: "0 8 * * 1" # monday 08:00 (can also be @hourly, @midnight etc.)
+  timeZone: Etc/UTC # change schedule's time zone (otherwise relative to kube-controller-manager local time zone)
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid # skip run if previous hasn't finished
@@ -5267,7 +5304,7 @@ objects:
     type: ClusterIP
     ports:
     - name: ${PORT}-${TARGET_PORT} # dereference is always string
-      port: ${{PORT}} # deference as is (Number in this case)
+      port: ${{PORT}} # dereference as is (Number in this case)
       targetPort: ${{TARGET_PORT}}
     selector:
       app: example
@@ -5283,6 +5320,9 @@ oc process NAMESPACE//example --param PORT=8080 --param TARGET_PORT=8181 | oc cr
 # instantiate template from file and parameters from file
 cat > parameters.txt <<<$'PORT=8080\nTARGET_PORT=8181'
 oc process -f template.yaml --param-file=parameters.txt | oc create -f -
+
+# instantiate template with new-app command
+oc new-app --template=example
 ```
 
 Set annotation `template.alpha.openshift.io/wait-for-ready=true` on template objects like `Build`, `BuildConfig`, `Deployment`, `DeploymentConfig`, and `Job` to wait for their readiness or completion. Template instantiation fails if the annotated objects report failure or the timeout of one hour is reached.

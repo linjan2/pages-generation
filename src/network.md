@@ -1144,6 +1144,12 @@ ntpstat
 
 # query network driver/firmware version and hardware settings
 ethtool -i enp6s0
+
+# release 
+dhclient -r eth0
+dhclient eth0
+
+dhclient -4 -v -i -pf /run/dhclient.ens160.pid -lf /var/lib/dhcp/dhclient.ens160.leases -I -df /var/lib/dhcp/dhclient6.ens160.leases ens160
 ```
 
 ### NetworkManager

@@ -872,6 +872,8 @@ sleep 2s # long running work
 man -k net-tools
 # show one-line manual page descriptions matching 'hostname' (whatis)
 man -f hostname
+# show search paths for manual pages
+manpath
 
 # print date at a specific time zone
 TZ='America/Los_Angeles' date +%T
