@@ -1102,7 +1102,7 @@ tcpdump -qnni br0
 
 ```sh
 # dump socket statistics
-ss --tcp --udp --listening --processes --numeric # -tulpn
+ss --tcp --udp --listening --all --processes --numeric # -tulpn
 # check open ports
 ss --threads --all --numeric
 ```
@@ -1145,9 +1145,10 @@ ntpstat
 # query network driver/firmware version and hardware settings
 ethtool -i enp6s0
 
-# release 
+# release DHCP IP address lease
 dhclient -r eth0
-dhclient eth0
+# run DHCP client in foreground
+dhclient -d eth0
 
 dhclient -4 -v -i -pf /run/dhclient.ens160.pid -lf /var/lib/dhcp/dhclient.ens160.leases -I -df /var/lib/dhcp/dhclient6.ens160.leases ens160
 ```
@@ -1176,7 +1177,8 @@ man 5 NetworkManager.conf
 # show all relevant fields
 nmcli connection show myconn
 # print specific fields
-nmcli --fields     ip4.address,ip4.dns,ip4.gateway connection show myconn
+nmcli --fields ip4.address,ip4.dns,ip4.gateway connection show myconn
+nmcli --fields DHCP4.OPTION connection show myconn
 nmcli --get-values ip4.address,ip4.dns,ip4.gateway connection show myconn
 nmcli -p -f general,wifi-properties device show wlan0
 
@@ -1268,6 +1270,29 @@ ip -details addr # -d,--details
 ip link show dev
 ip link show type bridge
 ip -d link ls
+
+# view documentation of network device status flags
+man 7 netdevice
+  # UP          : Interface is running
+  # BROADCAST   : Valid broadcast address set
+  # DEBUG       : Internal debugging flag
+  # LOOPBACK    : Interface is a loopback interface
+  # POINTOPOINT : Interface is a point-to-point link
+  # RUNNING     : Resources allocated
+  # NOARP       : No arp protocol, L2 destination address not set
+  # PROMISC     : Interface is in promiscuous mode
+  # NOTRAILERS  : Avoid use of trailers
+  # ALLMULTI    : Receive all multicast packets
+  # MASTER      : Master of a load balancing bundle
+  # SLAVE       : Slave of a load balancing bundle
+  # MULTICAST   : Supports multicas
+  # PORTSEL     : Is able to select media type via ifmap
+  # AUTOMEDIA   : Auto media selection active
+  # DYNAMIC     : The addresses are lost when the interface goes down
+  # LOWER_UP    : Driver signals L1 up (connected to a switch)
+  # DORMANT     : Driver signals dormant
+  # ECHO        : Echo sent packets
+  # NO-CARRIER  : No link level connection
 
 ip route show # show Linux kernel routing table
   # Example:

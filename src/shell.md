@@ -57,7 +57,7 @@ export EDITOR=vim
 
 ## Bash commands
 
-Keyboard shortcuts:
+### Keyboard shortcuts
 
 - `Tab` : Auto complete
 - `^i` : Auto complete
@@ -93,7 +93,7 @@ Keyboard shortcuts:
 - `Alt l` : Change word to lowercase
 - `Alt c` : Capitalize word
 
-Command shortcuts:
+### Command shortcuts
 
 - `!!` : Substitutes to last command
 - `!*` : Substitutes to last command except its first word
@@ -163,6 +163,70 @@ Check that input variables are set with the no-op command `:`.
 set -o errexit
 set -o nounset
 : $1 $EXPECTED_ENV
+```
+
+### shebang/hashbang
+
+Writing `!# /path/to/command` as the first line of a shell script sets the interpreter when the script file is executed.
+
+```sh
+#!/bin/sh -Eeu
+```
+
+Use `!# /usr/bin/env command` to run the interpreter in a modified environment.
+
+```sh
+#!/usr/bin/env bash
+echo Hello
+```
+
+Use `env -S`/`env --split-string=` to interpret multiple parameters in the shebang (instead of as one command).
+
+```sh
+#!/usr/bin/env -S AWKPATH=. awk -v OFS=: -f
+BEGIN {print 1,2,3}
+```
+
+```sh
+#!/usr/bin/env -S --unset=PYTHONDEBUG PYTHONWARNINGS=error python
+print("Hello")
+```
+
+### Display shell variables
+
+```sh
+set  # display shell variables, environment variables, functions
+
+# show readline key bindings and variables (controlling readline run-time behavior)
+bind -v
+info -n '(bash)Readline Init File Syntax'  # show info on readline settings
+
+env  # show environment variables
+
+declare     # display shell variables, environment variables
+declare -p  # print declared variables
+declare -F  # only function names
+declare -f function_name  # print function definition
+
+# print file and line number where function is declared
+shopt -s extdebug
+declare -F function_name
+shopt -u extdebug
+
+compgen -v  # display shell variables, environment variables
+compgen -b  # show all the bash built-ins
+compgen -k  # show all the bash keywords
+compgen -c  # display all commands
+compgen -a  # display aliases
+compgen -A function  # show all the bash functions
+compgen -bkcaA function  # combine filters
+help compgen
+
+type -a command_name     # print available commands with specified name
+type -P -a command_name  # prints all paths to the executable
+
+alias -p    # display aliases
+alias name  # show alias definition
 ```
 
 ### Control structures
@@ -446,6 +510,47 @@ trap "/bin/rm -f ${FILE}" TERM QUIT EXIT INT
 trap - TERM INT
 # trap all signals
 trap 'do_something' $(seq 0 15)
+```
+
+## Bash completion
+
+Create a completion function `_example_sh` in a script file.
+
+```sh
+function _example_sh()
+{
+  # current completion word
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  local COMMANDS='hello world'
+  local OPTIONS='-h -H'
+  # set array of completion matches based on current word
+  case "${cur}" in
+    -*)
+      # show option word list filtered by current word
+      COMPREPLY=( $( compgen -W "${OPTIONS}" -- ${cur} ) )
+      ;;
+    *)
+      # show command word list filtered by current word
+      COMPREPLY=( $(compgen -W "${COMMANDS}" -- "${cur}") )
+      ;;
+  esac
+  return 0
+}
+```
+
+```sh
+# source the file with the completion function
+. _example_sh
+# show completion function
+type _example_sh
+
+# register completion function compspec for script "example.sh"
+complete -F _example_sh ./example.sh
+# get tab completion
+./example.sh TAB TAB
+
+# list compspecs
+complete -p
 ```
 
 ## Variable substitutions
@@ -768,21 +873,6 @@ test -t 1 && echo 'stdout is a terminal'
 # Print bash startup commands with the corresponding script files
 # (Updates PS4 output; then run login shell command ':' with xtrace)
 PS4='+ $BASH_SOURCE:$FUNCNAME:$LINENO:' bash -lxc : 2>&1
-
-# print declared variables
-declare -p
-declare -F # only function names
-declare -f function_name # print function definition
-# print file and line number where function is declared
-shopt -s extdebug
-declare -F function_name
-# show aliases
-alias -p
-alias alias_name
-# print available commands with name command_name
-type -a command_name
-# prints all paths to the executable
-type -P -a command_name
 
 # escape non-printable characters in file with $'' syntax
 printf '%q' "$(<file.txt)"

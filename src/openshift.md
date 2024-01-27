@@ -22,6 +22,12 @@ External links:
 - [OpenShift runbooks](https://github.com/openshift/runbooks)
 - [Red Hat Learning](https://rol.redhat.com/rol/app/)
 
+## Cluster installation
+
+```sh
+
+```
+
 ## Cluster settings
 
 The cluster version and updates are managed by the cluster version operator (CVO).
@@ -104,6 +110,7 @@ oc patch clusterversion version --type=json --patch '
 # shut down dns operator
 oc scale deployment/dns-operator --replicas=0 -n openshift-dns-operator
 
+# remove overrides
 oc patch clusterversion version --type=json --patch \
   '[{"op": "remove", "path": "/spec/overrides"}]'
 ```
@@ -717,7 +724,7 @@ spec:
   - client auth # required value
 ```
 
-Generate a certificate signing request where `CN` is the user's name and `O` is the user's group. The user will be in the specified groups even the if `Group` resources don't list the user.
+Generate a certificate signing request where `CN` is the user's name and `O` is the user's group. The user will be in the specified groups even if the `Group` resources don't list the user.
 
 ```sh
 openssl genrsa -out myuser.key 4096
@@ -4391,6 +4398,16 @@ nsenter --target ${PID} --net ip a
 nsenter -t ${PID} -n tcpdump -nnvv -i eth0 port 8080 -w pod.pcap
 ```
 
+### 
+
+```sh
+oc get pvc --all-namespaces --sort-by=.metadata.namespace -o custom-columns=\
+NAMESPACE:.metadata.namespace,\
+NAME:.metadata.name,\
+STORAGECLASS:.spec.storageClassName,\
+STATUS:.status.phase'
+```
+
 #### Clear corrupt storage overlay directories from a node
 
 Drain the node of pods and then SSH into it. Disable the `crio` and `kubelet` services, and then remove container storage.
@@ -6213,6 +6230,61 @@ spec:
       - name: job
         image: example:latest
         resources: {}
+```
+
+## SealedSecrets
+
+```sh
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm install sealed-secrets -n sealed-secrets sealed-secrets/sealed-secrets
+```
+
+```sh
+oc create secret example -n example \
+  --dry-run=client -o yaml --from-literal=example=example > secret.yaml
+
+# encrypt with certificate generated in sealed-secrets namespace
+kubeseal --controller-name=sealed-secrets --format=yaml \
+  < secret.yaml > sealedsecret.yaml
+
+# encrypt with external certificate
+kubeseal --cert=https://example.com/sealed-secret.crt --format=yaml \
+  < secret.yaml > sealedsecret.yaml
+
+# encrypt single values (printf avoids additional newlines)
+kubeseal --raw \
+  --from-file=/dev/stdin --scope=strict \
+  --name=example --namespace=example < <(printf %s ${SECRET_VALUE})
+```
+
+The `encryptedData` can be used as variables in the non-encrypted fields under `template.data` of a `SealedSecrets`.
+
+```yaml
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: git-secret
+  namespace: example
+spec:
+  encryptedData:
+    authorization: AgBpr2uZ...
+  template:
+    metadata:
+      name: git-secret
+      namespace: example
+      annotations:
+        tekton.dev/git-0: 'tfs.trafikverket.local:443'
+    data:
+      # use encryptedData as variable with templating
+      .gitconfig: |-
+        [http "https://git.server.com"]
+          extraHeader = Authorization: Basic {{ index . "authorization" }}
+          sslCaInfo = /var/run/secrets/openshift.io/source/cacert.crt
+      .git-credentials: ''
+      cacert.crt: |-
+        -----BEGIN CERTIFICATE-----
+        MIIGyTC...
+        -----END CERTIFICATE-----
 ```
 
 ## Builds
