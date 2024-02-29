@@ -809,8 +809,15 @@ metadata:
 ```
 
 ```sh
+SECRET=$(oc get secret -n example \
+  -o=jsonpath='{.items[?(@.metadata.annotations.kubernetes\.io/service-account\.name=="example")].metadata.name}' \
+  --field-selector type=kubernetes.io/service-account-token)
+
+PASSWORD="$(oc extract secret/${SECRET} --keys=token --to=-)"
+
 # get token
-TOKEN="$(oc extract secret/example-token --keys=token --to=-)"
+TOKEN="$(oc extract secret/${SECRET} --keys=token --to=-)"
+
 # log in as system:serviceaccount:example:example
 oc login --token "${TOKEN}" api.DOMAIN:6443
 ```
@@ -1820,6 +1827,8 @@ oc patch route myroute -p '{"spec":{"tls": {"insecureEdgeTerminationPolicy": "Re
 oc set route-backends myroute mysvc1=4 mysvc2=1
 ```
 
+Below is a route with two backend services load balanced as 4:1.
+
 ```yaml
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -1835,11 +1844,11 @@ spec:
   path: null
   to: # primary service
     kind: Service
-    name: svc-a
-    weight: 1
+    name: mysvc1
+    weight: 4
   alternateBackends:
   - kind: Service
-    name: svc-b
+    name: mysvc2
     weight: 1
 ```
 
@@ -1853,7 +1862,9 @@ spec:
 
 > Ensure that container readiness and liveness probes use `scheme: HTTPS` instead of `HTTP` if service certificates were generated such that the containers now use HTTPS traffic.
 
-Route annotations with the format `haproxy.router.openshift.io/KEY=VALUE` override the ingress controller's default options.
+##### OpenShift ingress controller route annotations
+
+Route annotations with the format `haproxy.router.openshift.io/KEY=VALUE` override the OpenShift ingress controller's default options.
 
 ```sh
 # set server-side timeout on route
@@ -1871,9 +1882,14 @@ oc annotate route myroute \
 # replace request path that matches Route.spec.path with this value
 oc annotate route myroute haproxy.router.openshift.io/rewrite-target='/'
   # this would remove request path prefix that matches Route.spec.path
+
+# overwrite the sticky session cookie name (otherwise it's auto-generated)
+oc annotate route my_route router.openshift.io/cookie_name=my_cookie
 ```
 
-`Ingress` resources will default to using `IngressClass/openshift-default` which generates `Routes`.
+##### Ingress resources in OpenShift
+
+`Ingress` resources with `.spec.ingressClassName=openshift-default` will get `Routes` generated from it. Annotate `IngressClass/openshift-default` with `ingressclass.kubernetes.io/is-default-class=true` to use this as the default.
 
 ```yaml
 # oc create ingress myingress-edge 
@@ -1884,6 +1900,7 @@ metadata:
   annotations:
     route.openshift.io/termination: edge # generate edge route
 spec:
+  ingressClassName: openshift-default
   rules:
   - host: NAME.apps.example.com # hostname is required
     http:
@@ -1942,6 +1959,55 @@ spec:
   - hosts:
     - NAME.apps.example.com
     secretName: tls-certificate # tls.key and tls.crt
+```
+
+##### Multi-path routes
+
+Multiple routes can use the same host name if they match with different URL paths for HTTP based traffic. The request's host and path are passed through to the pod, but the path can be re-written.
+
+> Path based routing is not possible with passthrough routes, since the router can't read the request content.
+
+```yaml
+apiVersion: v1
+kind: Route
+metadata:
+  name: example1
+  annotations:
+    # removes /route1 and forwards target www.example.com[/<request-path>]
+    haproxy.router.openshift.io/rewrite-target: '/'
+spec:
+  host: www.example.com
+  path: '/route1'
+  to:
+    kind: Service
+    name: example1
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: example2
+  annotations:
+    # replaces /route2 with /baz and forwards target www.example.com/baz[/<request-path>]
+    haproxy.router.openshift.io/rewrite-target: '/baz'
+spec:
+  host: www.example.com
+  path: '/route2'
+  to:
+    kind: Service
+    name: example2
+```
+
+By default, routes in different namespaces can't use the same hostname (to avoid hijacking paths on the endpoint). This setting can be changed by setting `.spec.routeAdmission.namespaceOwnership=InterNamespaceAllowed` on the ingress controller.
+
+```yaml
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  name: default
+  namespace: openshift-ingress-operator
+spec:
+  routeAdmission:
+    namespaceOwnership: InterNamespaceAllowed
 ```
 
 #### Service CA certificates
@@ -5504,6 +5570,9 @@ example/
 helm create example --starter 'STARTER_NAME' # HELM_DATA_HOME/starters/STARTER_NAME
 helm template --namespace example RELEASENAME example # generate files to stdout
 helm template --output-dir dir RELEASENAME example # generate files to directory
+
+# verify chart files
+helm lint --values values.yaml --set abc.def=123 example
 
 mkdir package && cd package
 helm package ../example # create <CHARTNAME>-<VERSION>.tgz

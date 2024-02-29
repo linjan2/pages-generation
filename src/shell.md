@@ -41,7 +41,9 @@ fi
 
 unset rc
 
-export HISTSIZE=10000
+# export HISTFILE="${HOME}/.bash_history"
+export HISTFILESIZE=10000 # maximum number of lines in the history file
+export HISTSIZE=10000     # maximum number of lines in session history
 export HISTCONTROL=ignorespace:erasedups
 
 reset=$(tput sgr0)
@@ -195,13 +197,13 @@ print("Hello")
 ### Display shell variables
 
 ```sh
-set  # display shell variables, environment variables, functions
+set # display shell variables, environment variables, functions
+env # show environment variables
+export -p # display exported environment variables
 
 # show readline key bindings and variables (controlling readline run-time behavior)
 bind -v
 info -n '(bash)Readline Init File Syntax'  # show info on readline settings
-
-env  # show environment variables
 
 declare     # display shell variables, environment variables
 declare -p  # print declared variables
@@ -225,8 +227,12 @@ help compgen
 type -a command_name     # print available commands with specified name
 type -P -a command_name  # prints all paths to the executable
 
-alias -p    # display aliases
-alias name  # show alias definition
+alias -p      # display aliases
+alias name    # show alias definition
+
+unset name      # unset variable or function
+unalias name    # unset alias
+declare +x name # un-export variable
 ```
 
 ### Control structures
@@ -656,7 +662,7 @@ Expand a string/array to a substring/subarray using the syntax below. `start` an
 STRING='12345'
 echo ${STRING:1} # 2345
 
-ARRAY=( 1 2 3 4 5)
+ARRAY=( 1 2 3 4 5 )
 echo ${ARRAY[@]:1} # 2 3 4 5
 ```
 
@@ -710,9 +716,10 @@ cp example.conf{,.$(date +%F).bak}
 ### envsubst
 
 ```sh
-echo 'MY_VAR=${MY_VAIR}' > input.txt
-export MY_VAR=abc
-envsubst '$MY_VAR' < input.txt > output.txt
+echo 'MY_VAR1=${MY_VAR1} and ${MY_VAR2=${MY_VAR2}}' > input.txt
+export MY_VAR1=abc
+export MY_VAR2=123
+envsubst '${MY_VAR} ${MY_VAR2}' < input.txt > output.txt
 ```
 
 ## Pathname expansion (globbing)
@@ -1089,10 +1096,10 @@ top -E m -e m -o %MEM -U '!0'
 Interactive commands:
 
 - `h`: show help.
-- `W`: write out `toprc` file (path to file is displayed).
+- `f`: set shown fields.
+- `W`: write out `toprc` file (path to file is displayed; e.g. `~/.config/procps/toprc`).
 - `e`: cycle task memory scale.
 - `E`: cycle summary memory scale.
-- `f`: set shown fields.
 - `c`: toggle between command-line and program name for the `COMMAND` field.
 - `x`: toggle highlight of sorted field.
 - `z`: toggle colors.
