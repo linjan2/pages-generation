@@ -40,7 +40,7 @@ jobs:
 
       - name: Build
         #uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        uses: docker/build-push-action@v5 #3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@v6 #3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: minify
           push: true
