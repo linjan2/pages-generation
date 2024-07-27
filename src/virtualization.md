@@ -98,6 +98,9 @@ virsh --connect qemu:///system list --all   # as non-root on system connection
 virsh --connect qemu:///session list --all  # as non-root on session connection
   # NOTE: if current user is root, specifying qemu:///session will still use qemu:///system
 
+virsh nodememstats
+virsh nodecpustats --percent
+
 # list IP and MAC addresses of VMs on default network (the virbr0 bridge)
 virsh --connect 'qemu:///system' net-dhcp-leases default
 ip neigh show dev virbr0  # check ARP table for virbr0 bridge
@@ -245,7 +248,7 @@ Add `<domain>` tag in `default` network. `virsh --connect qemu:///system net-edi
   <bridge name='virbr0' stp='on' delay='0'/>
   <mac address='52:54:00:b1:54:fe'/>
   <!-- Add domain name -->
-  <domain name='linda-jansson.lo' localOnly='yes'/>
+  <domain name='linda-jansson.lo' register='true' localOnly='yes'/>
   <!--  -->
   <ip address='192.168.122.1' netmask='255.255.255.0'>
     <dhcp>

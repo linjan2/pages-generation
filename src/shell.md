@@ -823,8 +823,9 @@ echo $? # 0 if connection was successful
 ## Colors
 
 ```sh
-# print 256 shell colors with ANSI escape codes (48 for background; 38 is foreground)
+# print 256 shell colors with ANSI escape codes
 for i in {0..255} ; do echo -en "\e[48;5;${i}m ${i} \e[0m" ; done ; echo
+  # 48 for background; 38 is foreground
   # \e[38:5:<i>m  foreground color
   # \e[48:5:<i>m  background color
 
@@ -853,21 +854,33 @@ echo -e '\x1b[31m Hello \x1b[0m'
 for i in {0..7}; do echo -n $(tput setaf ${i}) COLOR ${i} $(tput sgr0); done; echo
 # print the 8 tput colors as background
 for i in {0..7}; do echo -n $(tput setab ${i}) COLOR ${i} $(tput sgr0); done; echo
+```
 
+```sh
 # store escape sequence in variable
 reset=$(tput sgr0)
 color=$(tput setaf 1)
 echo ${color} Hello ${reset}
 declare -p color  # print the assignment with \E value
 
+# create colored messages in variables
+error_msg() { printf "\033[31m%s\033[0m" "${*}"; }
+notice_msg() { printf "\033[33m%s\033[0m " "${*}"; }
+debug_msg() { printf "\033[30m%s\033[0m " "${*}"; }
+LINE_MSG="$(debug_msg '-----')"
+echo ${LINE_MSG}
+```
+
+```sh
 # tput text effects
 tput bold;  echo '(bold) Bold';                             tput sgr0 # reset
 tput smul;  echo '(smul) Underlined';                       tput rmul # end underline mode
 tput rev;   echo '(rev)  Reversed/inverted';                tput sgr0 # reset
 tput smso;  echo '(smso) Standout mode, probably inverted'; tput rmso # end standout mode
 tput invis; echo '(invis) Invisible mode';                  tput sgr0
+```
 
-
+```sh
 # print number of colors in terminal
 tput colors
 # test if stdout goes to a terminal (and not redirected to a file)
