@@ -1,6 +1,7 @@
 
 .PHONY: default clean
 
+MINIFY := minify/run.sh
 ROLLUP := rollup/run.sh
 
 OUTPUT_DIR ?= pages
@@ -15,11 +16,14 @@ default: $(TARGETS)
 
 PANDOC_OPTIONS := '/^<!----/ , /-->/ {sub("<!----$$","",$$1); sub("-->","",$$NF); print}'
 
-$(OUTPUT_DIR)/%.html: src/apps/%/index.md src/apps/%/head.html src/apps/%/after.html src/apps/%/before.html
+html/%.html: src/apps/%/index.md src/apps/%/head.html src/apps/%/after.html src/apps/%/before.html
 	pandoc "$<" --output "$@" --defaults .pandoc/defaults.yaml $(shell awk $(PANDOC_OPTIONS) "$<") \
 		--include-in-header "$(dir $<)head.html" \
 		--include-after-body "$(dir $<)after.html" \
 		--include-before-body "$(dir $<)before.html"
+
+$(OUTPUT_DIR)/%.html: html/%.html
+	$(MINIFY) "$<" > "$@"
 
 
 $(OUTPUT_DIR)/%/index.js: src/apps/%/index.js

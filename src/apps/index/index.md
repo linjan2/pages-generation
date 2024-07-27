@@ -4,7 +4,6 @@
 --metadata=subtitle:'Notes on programming, systems tools, and applications'
 --metadata=description:'Notes on programming and systems tools'
 --variable includeHeader=true --variable h1='>'
---css spinner.css
 -->
 
 ## index
@@ -19,4 +18,3 @@
 - <div class="card">[Spin the wheel](spinthewheel.html)</div>
 - <div class="card">[Guess the word](guesstheword.html)</div>
 - <div class="card">[OpenGL Shading Language (GLSL)](glsl.html)</div>
-

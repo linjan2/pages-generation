@@ -1,10 +1,10 @@
 <!----
 --table-of-contents --number-sections
---variable homelink=true --variable includeHeader=true
 --metadata=title:"GLSL"
 --metadata=title-meta="glsl"
 --metadata=subtitle:"OpenGL Shading Language (GLSL)"
 --metadata=description:'GLSL'
+--variable homelink=true --variable includeHeader=true
 -->
 
 # GLSL
